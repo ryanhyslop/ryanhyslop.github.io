@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Opinion | Ryan Hyslop - Frontend Developer]]></title>
   <link href="http://ryanhyslop.github.io/blog/categories/opinion/atom.xml" rel="self"/>
   <link href="http://ryanhyslop.github.io/"/>
-  <updated>2013-12-27T13:05:50+00:00</updated>
+  <updated>2013-12-27T22:59:54+00:00</updated>
   <id>http://ryanhyslop.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hyslop]]></name>
@@ -12,27 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Moving to Octopress]]></title>
-    <link href="http://ryanhyslop.github.io/blog/2013/07/28/moving-to-octopress/"/>
-    <updated>2013-07-28T20:11:00+01:00</updated>
-    <id>http://ryanhyslop.github.io/blog/2013/07/28/moving-to-octopress</id>
-    <content type="html"><![CDATA[<p>Having watched by blog go a bit stale I needed something to re-invigorate my writing process.</p>
-
-<p>My old blog was &ldquo;Powered By Wordpress&rdquo; and recently I&rsquo;ve not been working with that platform often, and find the experience when I do dip into it a bit; <em>deep breath</em> urgh.</p>
-
-<p>Now thats not a criticism of Wordpress at all, its I find myself wanting ALL THE PLUGINS and spend time tinkering on bits that I just don&rsquo;t want to be doing (PHP mainly).</p>
-
-<p>I discovered Jekyll a while ago and have been keeping my eye on Octopress and have decided to move over and take the plunge. With it being a static site generator I feel its perfectly suited to a fronted development blog as it lets me focus on content, markup and performance, the cornerstones of frontend development.</p>
-
-<p>Also being able to write blog posts in Ai Writer in markdown is awesome sauce.</p>
-
-<p>Hopefully the outcome will be me writing more and being encouraged to slowly iterate on my personal site.</p>
-
-<p>I will try and document my progress and review my experience at a later date.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Taming the Sheet - Thoughts on modern CSS Authoring]]></title>

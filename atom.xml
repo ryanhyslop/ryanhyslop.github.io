@@ -4,7 +4,7 @@
   <title><![CDATA[Ryan Hyslop - Frontend Developer]]></title>
   <link href="http://ryanhyslop.github.io/atom.xml" rel="self"/>
   <link href="http://ryanhyslop.github.io/"/>
-  <updated>2013-12-27T13:05:50+00:00</updated>
+  <updated>2013-12-27T22:59:54+00:00</updated>
   <id>http://ryanhyslop.github.io/</id>
   <author>
     <name><![CDATA[Ryan Hyslop]]></name>
@@ -14,23 +14,233 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Moving to Octopress]]></title>
-    <link href="http://ryanhyslop.github.io/blog/2013/07/28/moving-to-octopress/"/>
-    <updated>2013-07-28T20:11:00+01:00</updated>
-    <id>http://ryanhyslop.github.io/blog/2013/07/28/moving-to-octopress</id>
-    <content type="html"><![CDATA[<p>Having watched by blog go a bit stale I needed something to re-invigorate my writing process.</p>
+    <title type="html"><![CDATA[Magento Theming: Working With Layout]]></title>
+    <link href="http://ryanhyslop.github.io/blog/2012/10/25/magento-theming-working-with-layout/"/>
+    <updated>2012-10-25T22:08:00+01:00</updated>
+    <id>http://ryanhyslop.github.io/blog/2012/10/25/magento-theming-working-with-layout</id>
+    <content type="html"><![CDATA[<p>Any frontend developer who&rsquo;s taken a passive interest or a curious look into Magento theming will remember the moment when they recoiled and thought; &ldquo;Honestly, wtf&rdquo;.</p>
 
-<p>My old blog was &ldquo;Powered By Wordpress&rdquo; and recently I&rsquo;ve not been working with that platform often, and find the experience when I do dip into it a bit; <em>deep breath</em> urgh.</p>
+<p>It&rsquo;s in our nature as developers to dive into things, at least initially. If something catches our interest we want to see straight away how it works, so rather than reading around a subject, perhaps doing a tutorial first, we rip off the mask and see the god awful monster staring back at us. We scream, it screams and we all run away, and for some people thats enough Magento for them.</p>
 
-<p>Now thats not a criticism of Wordpress at all, its I find myself wanting ALL THE PLUGINS and spend time tinkering on bits that I just don&rsquo;t want to be doing (PHP mainly).</p>
+<p>There&rsquo;s no denying the theming engine in Magento takes patience to learn and can be frustrating in places, notably due to a lack of documentation and the blind ineffectively leading the blind.</p>
 
-<p>I discovered Jekyll a while ago and have been keeping my eye on Octopress and have decided to move over and take the plunge. With it being a static site generator I feel its perfectly suited to a fronted development blog as it lets me focus on content, markup and performance, the cornerstones of frontend development.</p>
+<p><em>This post wont teach you how to theme in magento but will detail some general concepts and tips to do some common things that should ease your pain.</em></p>
 
-<p>Also being able to write blog posts in Ai Writer in markdown is awesome sauce.</p>
+<!--more-->
 
-<p>Hopefully the outcome will be me writing more and being encouraged to slowly iterate on my personal site.</p>
 
-<p>I will try and document my progress and review my experience at a later date.</p>
+<h2>Layouts</h2>
+
+
+<p>The layout part of Magento theming is generally the one that catches most people out, since its quite unique to Magento. If you&rsquo;re still struggling to grasp the relationship between the layout xml files and the templates the best &lsquo;non-technical&rsquo; description I can give, is that your Template files ( the .phtml ) provide a placeholder ( $this->getChildHtml(&lsquo;&rsquo;); ) for your layout blocks to insert themselves into. You can then order your blocks, remove some in your layout xml documents. Why is this better than editing the .phtml files? Enter local.xml</p>
+
+<h2>local.xml</h2>
+
+
+<p>If you&rsquo;ve done any level Magento development and not used local.xml in your theme, prepare to kick yourself.</p>
+
+<p>Some outdated tutorials and forum posts, and indeed the template layer, encourage you to copy the files you want to change over from the base theme into your local theme. Gotta change something in catalog.xml? Easy, just copy that to <em>/mytheme/default/layout/</em> right? Well you could, it would work, but overriding hundreds of lines of core code just to change 1 line is overkill, not to mention if an upgrade changes catalog.xml a bit then things are gonna break, hard.</p>
+
+<p>I won&rsquo;t pander too much as most themers will be aware of this file but essentially it lets you add layout handles that effect modules throughout the site. Need to remove the newsletter module signup from across the site? Rather than edit newsletter.xml. Just add the following to the local.xml:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;default&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;remove</span> <span class="na">name=</span><span class="s">&quot;left.newsletter&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/default&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can control so much with local.xml it should most likely be the <em>only</em> file in your themes layout/ folder, so then, what can we do?</p>
+
+<h2>Referencing and Moving</h2>
+
+
+<p>If there is something you need to amend, first find its handle in its module&rsquo;s xml file. For example the Product view uses catalog.xml and its &lsquo;handle&rsquo; is catalog_product_view. Create the relevant nodes in your local.xml</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;catalog</span><span class="na">_product_view</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="c">&lt;!-- Now we can override stuff from the catalog.xml, 1 line, 2 lines or everything if needed --&gt;</span> 
+</span><span class='line'><span class="err">&lt;</span>/catalog_product_view&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once you&rsquo;ve specified the handle you need to open a reference to the area you want to influence, the reference is the &lsquo;name&rsquo; of the parent node. So still using catalog.xml and the catalog_product_view as an example:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;catalog/product_view&quot;</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span> <span class="na">template=</span><span class="s">&quot;catalog/product/view.phtml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    ....
+</span><span class='line'>    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;catalog/product_view_description&quot;</span> <span class="na">name=</span><span class="s">&quot;product.description&quot;</span> <span class="na">as=</span><span class="s">&quot;description&quot;</span> <span class="na">template=</span><span class="s">&quot;catalog/product/view/description.phtml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    ....
+</span><span class='line'>    <span class="nt">&lt;/block&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this case if we wanted to effect &ldquo;product.description&rdquo; we&rsquo;d open up a reference to its parent &ldquo;product.info&rdquo; :</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;catalog</span><span class="na">_product_view</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- we can now effect anything inside this reference --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'><span class="err">&lt;</span>/catalog_product_view&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>More often than not you&rsquo;ll be calling a higher level reference such as &ldquo;content&rdquo;, &ldquo;left&rdquo; or &ldquo;right&rdquo;.</p>
+
+<p>One of the most common things you&rsquo;ll need to do is either remove elements or move them around, so lets look at the best way of doing that.</p>
+
+<h3>&#8220;Definately wont be needing that&#8221;</h3>
+
+
+<p>If you absolutely do not need something in your templates you can call remove on it.</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;catalog</span><span class="na">_product_view</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;remove</span> <span class="na">name=</span><span class="s">&quot;product.description&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'><span class="err">&lt;</span>/catalog_product_view&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This means its completely removed from the theme, we can&rsquo;t use it anywhere else, which in this case is possibly a bad idea, what if we just wanted to put it somewhere else?</p>
+
+<h3>&#8220;I wanna put that over there&#8221;</h3>
+
+
+<p>Say you don&rsquo;t want the breadcrumbs rendering where they do normally, you want to put them in another reference you&rsquo;ve styled differently, you&rsquo;ve created the reference now you want to stick the breadcrumbs in there:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;default&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;unsetChild&quot;</span><span class="nt">&gt;&lt;name&gt;</span>breadcrumbs<span class="nt">&lt;/name&gt;&lt;/action&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;masthead.sub&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;insert&quot;</span><span class="nt">&gt;&lt;child&gt;</span>breadcrumbs<span class="nt">&lt;/child&gt;&lt;/action&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'><span class="nt">&lt;/default&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>These sort of things are really handy as they stop you touching the template files which is always a good thing if you can get away with it.</p>
+
+<h3>&#8220;But I need to put that somewhere that doesn&#8217;t have  a reference&#8221;.</h3>
+
+
+<p>Why not create a new reference? I&rsquo;ve found myself having to do this for things like &ldquo;masthead&rdquo; where theres an area between the normal header and the main page and I want to inject banners or other content to it. A lot of documentation tells you to add them to page.xml, but you can add them in your local.xml in the root reference:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;default&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;core/text_list&quot;</span> <span class="na">name=</span><span class="s">&quot;masthead&quot;</span> <span class="na">as=</span><span class="s">&quot;masthead&quot;</span> <span class="na">translate=</span><span class="s">&quot;label&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;label&gt;</span>Masthead<span class="nt">&lt;/label&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;/block&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'><span class="nt">&lt;/default&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For those that may not know the default handle effects every page on the site, and the root reference is, well its the very top reference. You can do other cool things here like set the default template for every page, within your local.xml</p>
+
+<h3>&#8220;Hey, everything has a 3 columns by default, most my pages are two column left&#8221;</h3>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;default&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setTemplate&quot;</span><span class="nt">&gt;&lt;template&gt;</span>page/2column-left.phtml<span class="nt">&lt;/template&gt;&lt;/action&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/reference&gt;</span>
+</span><span class='line'><span class="nt">&lt;/default&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom! Everything will now be 2 column left unless overridden somewhere else, you can leave page.xml in the base theme.</p>
+
+<h2>Other Little Tricks</h2>
+
+
+<p>In Magento sometimes the little things can be the most frustrating, here are a couple of problems I&rsquo;ve run into with some snippets to save the pain.</p>
+
+<h3>&#8220;The product grid is showing 3 items per row, dammit I need 4!&#8221;</h3>
+
+
+<p>This little nugget will help you here, I keep coming back to it so its actually good I have it published somewhere:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product_list&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setColumnCount&quot;</span><span class="nt">&gt;&lt;count&gt;</span>4<span class="nt">&lt;/count&gt;&lt;/action&gt;</span>
+</span><span class='line'><span class="nt">&lt;/reference&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>&#8220;If only I could wrap that block in another div and set a class on it&#8221;</h3>
+
+
+<p>Before you go reaching to override that template file just to wrap the block in a container for styling purposes, have a little consideration for this snippet. It&rsquo;ll wrap your target block (myblock) in a div element and you can set a class on it:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;page/html_wrapper&quot;</span> <span class="na">name=</span><span class="s">&quot;myblock.wrapper&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setElementClass&quot;</span><span class="nt">&gt;&lt;value&gt;</span>my-wrapper-classname<span class="nt">&lt;/value&gt;&lt;/action&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;page/html&quot;</span> <span class="na">name=</span><span class="s">&quot;myblock&quot;</span><span class="nt">/&gt;</span> <span class="c">&lt;!-- add your block in here --&gt;</span>
+</span><span class='line'><span class="nt">&lt;/block&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>&#8220;I can&#8217;t stands no more&#8221;</h3>
+
+
+<p>We&rsquo;ll leave it there then, I hope the above helps someone as I&rsquo;ve had to learn some of these lessons the hard way over the years, I&rsquo;ll try and continue to put out stuff that will help beginner magento themers get it right the easy way in the future.</p>
+
+<p>Its important to note that we do poke fun at Magento for being difficult, but in reality its a massively complicated and immensely powerful platform, and in the right hands you can do amazing things, very quickly. You just need to train those hands.</p>
+
+<p>Futher Reading : <a href="http://magebase.com/magento-tutorials/demystifying-magentos-layout-xml-part-1/"><a href="http://magebase.com/magento-tutorials/demystifying-magentos-layout-xml-part-1/">http://magebase.com/magento-tutorials/demystifying-magentos-layout-xml-part-1/</a></a></p>
 ]]></content>
   </entry>
   
