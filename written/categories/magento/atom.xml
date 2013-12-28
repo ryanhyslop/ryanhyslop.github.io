@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Magento | Ryan Hyslop - Frontend Developer]]></title>
-  <link href="http://ryanhyslop.github.io/blog/categories/magento/atom.xml" rel="self"/>
-  <link href="http://ryanhyslop.github.io/"/>
-  <updated>2013-12-28T00:35:12+00:00</updated>
-  <id>http://ryanhyslop.github.io/</id>
+  <link href="http://barkingtiger.com/written/categories/magento/atom.xml" rel="self"/>
+  <link href="http://barkingtiger.com/"/>
+  <updated>2013-12-28T16:45:08+00:00</updated>
+  <id>http://barkingtiger.com/</id>
   <author>
     <name><![CDATA[Ryan Hyslop]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Magento Theming: Working With Layout]]></title>
-    <link href="http://ryanhyslop.github.io/blog/2012/10/25/magento-theming-working-with-layout/"/>
+    <link href="http://barkingtiger.com/written/2012/10/25/magento-theming-working-with-layout/"/>
     <updated>2012-10-25T22:08:00+01:00</updated>
-    <id>http://ryanhyslop.github.io/blog/2012/10/25/magento-theming-working-with-layout</id>
+    <id>http://barkingtiger.com/written/2012/10/25/magento-theming-working-with-layout</id>
     <content type="html"><![CDATA[<p>Any frontend developer who&rsquo;s taken a passive interest or a curious look into Magento theming will remember the moment when they recoiled and thought; &ldquo;Honestly, wtf&rdquo;.</p>
 
 <p>It&rsquo;s in our nature as developers to dive into things, at least initially. If something catches our interest we want to see straight away how it works, so rather than reading around a subject, perhaps doing a tutorial first, we rip off the mask and see the god awful monster staring back at us. We scream, it screams and we all run away, and for some people thats enough Magento for them.</p>

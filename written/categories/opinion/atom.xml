@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Opinion | Ryan Hyslop - Frontend Developer]]></title>
-  <link href="http://ryanhyslop.github.io/blog/categories/opinion/atom.xml" rel="self"/>
-  <link href="http://ryanhyslop.github.io/"/>
-  <updated>2013-12-28T00:35:12+00:00</updated>
-  <id>http://ryanhyslop.github.io/</id>
+  <link href="http://barkingtiger.com/written/categories/opinion/atom.xml" rel="self"/>
+  <link href="http://barkingtiger.com/"/>
+  <updated>2013-12-28T16:45:08+00:00</updated>
+  <id>http://barkingtiger.com/</id>
   <author>
     <name><![CDATA[Ryan Hyslop]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Taming the Sheet - Thoughts on modern CSS Authoring]]></title>
-    <link href="http://ryanhyslop.github.io/blog/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring/"/>
+    <link href="http://barkingtiger.com/written/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring/"/>
     <updated>2012-05-01T19:45:00+01:00</updated>
-    <id>http://ryanhyslop.github.io/blog/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring</id>
+    <id>http://barkingtiger.com/written/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring</id>
     <content type="html"><![CDATA[<p>One of the biggest challenges once a developer has a grasp of new language is how to implement it effectively and sensibly.</p>
 
 <p>A lot of established languages have design patterns to draw upon, blueprints of code that experienced developers over time have curated as ‘best practice’. These patterns or approaches give newer developers a reference point to see how developing in a certain manner will be more effective.</p>
