@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://barkingtiger.com/sitemap.xml 
