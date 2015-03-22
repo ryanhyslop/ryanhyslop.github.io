@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>2013 - A retrospective</title>
+  <meta name="description" content="These types of posts are a little bit cliche but I felt, given the fast moving pace of our industry and how it can continually feel like you don’t know enoug...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ryanhyslop.uk/reflection,/review/2014/01/02/2013-a-retrospective.html">
+  <link rel="alternate" type="application/rss+xml" title="Ryan Hyslop - I Design & Develop Experiences For The Web" href="http://ryanhyslop.uk/feed.xml" />
+    <script src="//use.typekit.net/umi0wtn.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+
+<body>
+
+    <header role="banner" class="site-header site-header--small">
+    <div class="l-constrain">
+        <h1>
+            <a href="/">
+                <img src="/images/ryanhyslop.svg" alt="Ryan Hyslop"/>
+            </a>
+        </h1>
+        
+    </div>
+</header>
+
+
+
+<!-- <a class="page-link" href="/about/">About</a> -->
+
+
+
+
+
+
+
+
+
+
+    <div class="l-constrain l-constrain--inner">
+        <div role="main">
+            <div class="l-constrain">
+
+    <article class="article article--single">
+
+        <header class="article__header">
+            <h1 class="article__title">2013 - A retrospective</h1>
+            <p class="article__date">Jan 2, 2014</p>
+        </header>
+
+        <div class="article__content">
+        <p>These types of posts are a little bit cliche but I felt, given the fast moving pace of our industry and how it can continually feel like you don’t know enough, its important to reflect on how far you’ve come from time to time, and I suppose a new year brings that sentiment to the surface easier than other times.</p>
+
+<p>This past year (and the latter part of 2012) has involved some of the biggest changes in my life since I moved away from home to Leeds University in 2004; New job, new home, and new challenges. I’d like this post to capture what I feel like I’ve learned, where I’ve improved and aspirations for 2014.</p>
+
+<!--more-->
+
+<h2 id="agile-amp-lean">Agile &amp; Lean</h2>
+<p>The past year exposed me to a full on agile workflow for the first time. There was quite a learning curve, admittedly, especially getting involved with the requirements gathering at the start of a project. It also took me a little while to adjust to the idea that we could involve design alongside a regular development sprint. Whilst I could fully understand the merits of not doing upfront design, I struggled initially with the practicalities of how that fits into the process ( Kirsten has wrote some <a href="http://www.uvd.co.uk/blog/designing-for-user-stories/" title="Designing for user stories">excellent</a> <a href="(http://www.uvd.co.uk/blog/stop-doing-upfront-design-its-a-waste-of-time/" title="Stop doing upfront design its a waste of time">articles</a> on just how we do that).</p>
+
+<p>My interest towards the latter part of the year has been in trying to improve the integration of a design workflow into our general agile process. We’ve had quite a bit of success in pulling user stories into the design workflow one sprint ahead of the development cycle, and working incredibly tightly with the development team and the client to ensure we get a cross pollination of ideas and buy-in from all parties prior to development starting on that user story. </p>
+
+<p>One area that I know I could improve is in advocating and facilitating the involvement of more users in this workflow. Having read the rather excellent <a href="http://www.abookapart.com/products/just-enough-research">‘Just enough research’</a> over the holidays I’m keen to explore introducing some end user research into our design process this year.</p>
+
+<h2 id="frontend-tooling-and-workflow">Frontend Tooling and Workflow</h2>
+
+<p>Last year exposed me to quite a few new technologies and processes that have pretty much changed the way I work.</p>
+
+<h3 id="vagrant">Vagrant</h3>
+
+<p><a href="http://www.vagrantup.com/">Vagrant</a> is a utility that allows you to share portable development environments that you can spin up as Virtual Machines. Whilst its not something I’ve had much of an active input in curating its certainly an interesting way of managing and switching your development environments, and especially helps keep your host machine free of clutter. I will be keeping an eye on <a href="https://www.docker.io/">Docker</a> this year as it seems to be gaining quite a bit of popularity.</p>
+
+<h3 id="grunt">Grunt</h3>
+<p>Quite frankly one of the best tools in a frontend arsenal at the moment. I started off using it to watch and compile changes to sass files and since then I’ve used it for everything from image optimisation, live reload, running javascript tests and building out minified and concatenated js/css resources. I even had a go a creating my own plugin to build and serve a pattern library from static assets ( <a href="https://github.com/ryanhyslop/grunt-pattern-knit">Pattern Knit</a> ) - which admittedly needs some improvements but have found it works quite well on some recent projects. I still think I’m not making the most of Grunt currently, so I’m looking to try and write a few more tasks this year, and will be keeping an eye on <a href="http://gulpjs.com/">Gulp.js</a> which seems to be gaining some traction as an alternative to Grunt.</p>
+
+<h3 id="yeoman">Yeoman</h3>
+<p>I took a bit of a dive into Yeoman this year with the Angular generator. I didn’t have a particularly great experience with it as we unfortunately started using it just as it hit the 1.0 release and there were some issues with the Angular generator. I’d really like to get more involved with it for a new project and perhaps invest time in learning more about developing generators for it ( and for grunt ) so we can make it work better for us in the future.</p>
+
+<h3 id="bower">Bower</h3>
+
+<p>Admittedly I struggled with the concept of bower at the start. I felt that, for most of the projects I’d worked on, simply committing whatever 3rd party libraries the project depended on was sufficient. I still think that for your typical web site development bower may be a bit much, but it really comes into its own when developing a web application. Alongside Grunt, Bower has made deploying a recent project so much more reliable. 
+It facilitates a modularity in your build system and repositories, most web apps are built with a collection of individual, dependant modules and bower makes managing this incredibly easy.</p>
+
+<h3 id="behaviour-driven-development">Behaviour Driven Development</h3>
+
+<p>A new concept to me at the start of the year. The principle being that the acceptance criteria for a feature is written in human readable language - using <a href="http://docs.behat.org/guides/1.gherkin.html">Gerkin</a> - forged from user stories, and using a tool, in our case Behat, write tests that validate the application is doing what it needs to to support those user stories. It requires quite an investment in time and approach to get working currently, and that approach can change from project to project. In a rapidly changing project we’ve found these tests can provide a bigger return on investment than our regular unit tests as at least we know the feature is still working, which ultimately is the most important thing.</p>
+
+<p>Related to this a personal milestone last year was actually doing a in house talk on this very subject <a href="http://www.youtube.com/watch?v=DeXGZQkGqpA">Full Stack Behaviour Driven Development: From Backend to Frontend</a>. </p>
+
+<p>I’m currently keeping an eye on the <a href="https://github.com/cucumber/cucumber-js">Cucumber.js</a> project with the hope that it will reach point where it could potentially play a part in our future BDD workflow.</p>
+
+<h3 id="robohydra">Robohydra</h3>
+<p><a href="http://robohydra.org/">Robohydra</a> is a fantastic little tool thats worth a mention, it essentially allows you to configure it to return mock data or static files back from URLs. This is immensely helpful for quick debugging a live site with local assets or to develop a client and mock the backend responses. <a href="http://robsquir.es/blog/2013/03/06/bdd-tips-mocking-an-api/" title="BDD tips mocking an api">This post</a> by Rob gives a great insight into how we’ve used it in the past. I’ve found it especially useful used in conjunction with <a href="https://chrome.google.com/webstore/detail/postman-rest-client">Postman REST client</a> to test your frontend without needing the backend to be available to support it.</p>
+
+<h2 id="javascript-amp-frameworks">Javascript &amp; Frameworks</h2>
+
+<p>Circa late 2011 my javascript skills had been limited to UI behaviours and relied quite heavily on jQuery. This past year has seen me dive deeper into javascript itself gaining a much better understanding of the language and software design principles in general. Whilst I don’t aspire to be a software developer, I’ve felt like I really want to push my javascript development as far as I can take it, simply because I enjoy it.</p>
+
+<p>This past year has seen me gain some practical experience developing apps with <a href="http://backbonejs.org/">Backbone.js</a> and <a href="http://angularjs.org/">Angular.js</a> and testing them with <a href="http://visionmedia.github.io/mocha/">Mocha</a>, <a href="http://chaijs.com/">Chai</a>, <a href="http://sinonjs.org/">Sinon</a> and <a href="http://karma-runner.github.io/0.10/index.html">Karma</a>. Whilst the merits of each of these is beyond the scope of this article, I feel like I’ve been fortunate to gain exposure to some best in class tools that have given me a well rounded skill set when approaching development for web applications.</p>
+
+<p>This year I want to invest more time in learning more about changes coming in ES6 and the impact they will have. I’d also like to spend a bit more time understanding javascript design patterns and general architecture best practices to allow me to make better informed decisions when developing. There are some interesting changes in the javascript MVC world thats worth keeping a breast of, as outlined in <a href="http://swannodette.github.io/2013/12/17/the-future-of-javascript-mvcs/">this post</a>.</p>
+
+<h3 id="ultimatelyhellip">Ultimately…</h3>
+<p>my take away from the past year is that whilst I feel I’ve learned a lot I don’t feel like I’ve expressed that learning in any other way than my day to day work activities. With that in mind, I’m aspiring that 2014 be the year that I start experimenting more and documenting more, starting with this rather laboured post itself.</p>
+
+        </div>
+
+    </article>
+
+</div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="l-constrain">
+
+    <img src="/images/profile.png" alt="" />
+
+    <h2 class="signature">
+       Ryan Hyslop
+       <span>Developer &amp; Designer</span>
+    </h2>
+
+    <a class="twitter" href="http://www.twitter.com/ryanhyslop">@ryanhyslop</a>
+
+
+  </div>
+
+</footer>
+
+<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+        user: 'ryanhyslop',
+        count: 10,
+        skip_forks: true,
+        target: '#github-repos'
+    });
+});
+</script>
+
+<script>
+var github = (function(){
+  function escapeHtml(str) {
+    return $('<div/>').text(str).html();
+  }
+  function render(target, repos){
+    var i = 0, fragment = '', t = $(target)[0];
+
+    for(i = 0; i < repos.length; i++) {
+      fragment += '<li><a href="'+repos[i].html_url+'">'+repos[i].name+'</a><p>'+escapeHtml(repos[i].description||'')+'</p></li>';
+    }
+    t.innerHTML = fragment;
+  }
+  return {
+    showRepos: function(options){
+      $.ajax({
+          url: "https://api.github.com/users/"+options.user+"/repos?sort=pushed&callback=?"
+        , dataType: 'jsonp'
+        , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+        , success: function(data) {
+          var repos = [];
+          if (!data || !data.data) { return; }
+          for (var i = 0; i < data.data.length; i++) {
+            if (options.skip_forks && data.data[i].fork) { continue; }
+            repos.push(data.data[i]);
+          }
+          if (options.count) { repos.splice(options.count); }
+          render(options.target, repos);
+        }
+      });
+    }
+  };
+})();
+</script>
+
+<script lang="Javascript">
+    function showLastfmFeed(json){
+        if(json.recenttracks == 'undefined'){
+            return
+        }
+
+        var tracklist = document.getElementById('lastfm-repos'),
+            content = '';
+
+        $.each(json.recenttracks.track, function(i, track){
+            content += '<li id="lastfmItem_'+i+'"><a href="'+ track.url + '">' + track.name +'</a> by '+ track.artist['#text'] + '</li>';
+        });
+
+        tracklist.innerHTML = content;
+    }
+</script>
+
+<script src="http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=ryu85&limit=10&api_key=158ae35ee8765aa3463a2e74cbb6d9d3&format=json&callback=showLastfmFeed"></script>
+
+
+<script src='dist/js/app.bundle.js'></script>
+
+
+</body>
+
+</html>

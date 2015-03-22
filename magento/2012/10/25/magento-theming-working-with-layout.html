@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Magento Theming: Working With Layout</title>
+  <meta name="description" content="Any frontend developer who’s taken a passive interest or a curious look into Magento theming will remember the moment when they recoiled and thought; “Honest...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ryanhyslop.uk/magento/2012/10/25/magento-theming-working-with-layout.html">
+  <link rel="alternate" type="application/rss+xml" title="Ryan Hyslop - I Design & Develop Experiences For The Web" href="http://ryanhyslop.uk/feed.xml" />
+    <script src="//use.typekit.net/umi0wtn.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+
+<body>
+
+    <header role="banner" class="site-header site-header--small">
+    <div class="l-constrain">
+        <h1>
+            <a href="/">
+                <img src="/images/ryanhyslop.svg" alt="Ryan Hyslop"/>
+            </a>
+        </h1>
+        
+    </div>
+</header>
+
+
+
+<!-- <a class="page-link" href="/about/">About</a> -->
+
+
+
+
+
+
+
+
+
+
+    <div class="l-constrain l-constrain--inner">
+        <div role="main">
+            <div class="l-constrain">
+
+    <article class="article article--single">
+
+        <header class="article__header">
+            <h1 class="article__title">Magento Theming: Working With Layout</h1>
+            <p class="article__date">Oct 25, 2012</p>
+        </header>
+
+        <div class="article__content">
+        <p>Any frontend developer who’s taken a passive interest or a curious look into Magento theming will remember the moment when they recoiled and thought; “Honestly, wtf”.</p>
+
+<p>It’s in our nature as developers to dive into things, at least initially. If something catches our interest we want to see straight away how it works, so rather than reading around a subject, perhaps doing a tutorial first, we rip off the mask and see the god awful monster staring back at us. We scream, it screams and we all run away, and for some people thats enough Magento for them.</p>
+
+<p>There’s no denying the theming engine in Magento takes patience to learn and can be frustrating in places, notably due to a lack of documentation and the blind ineffectively leading the blind.</p>
+
+<p><em>This post wont teach you how to theme in magento but will detail some general concepts and tips to do some common things that should ease your pain.</em>
+<!--more--></p>
+<h2>Layouts</h2>
+<p>The layout part of Magento theming is generally the one that catches most people out, since its quite unique to Magento. If you’re still struggling to grasp the relationship between the layout xml files and the templates the best ‘non-technical’ description I can give, is that your Template files ( the .phtml ) provide a placeholder ( $this-&gt;getChildHtml(‘’); ) for your layout blocks to insert themselves into. You can then order your blocks, remove some in your layout xml documents. Why is this better than editing the .phtml files? Enter local.xml</p>
+<h2>local.xml</h2>
+<p>If you’ve done any level Magento development and not used local.xml in your theme, prepare to kick yourself.</p>
+
+<p>Some outdated tutorials and forum posts, and indeed the template layer, encourage you to copy the files you want to change over from the base theme into your local theme. Gotta change something in catalog.xml? Easy, just copy that to <em>/mytheme/default/layout/</em> right? Well you could, it would work, but overriding hundreds of lines of core code just to change 1 line is overkill, not to mention if an upgrade changes catalog.xml a bit then things are gonna break, hard.</p>
+
+<p>I won’t pander too much as most themers will be aware of this file but essentially it lets you add layout handles that effect modules throughout the site. Need to remove the newsletter module signup from across the site? Rather than edit newsletter.xml. Just add the following to the local.xml:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;default&gt;</span>
+    <span class="nt">&lt;remove</span> <span class="na">name=</span><span class="s">&quot;left.newsletter&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/default&gt;</span></code></pre></div>
+
+<p>We can control so much with local.xml it should most likely be the <em>only</em> file in your themes layout/ folder, so then, what can we do?</p>
+<h2>Referencing and Moving</h2>
+<p>If there is something you need to amend, first find its handle in its module’s xml file. For example the Product view uses catalog.xml and its ‘handle’ is catalog_product_view. Create the relevant nodes in your local.xml</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;catalog_product_view&gt;</span>
+    <span class="c">&lt;!-- Now we can override stuff from the catalog.xml, 1 line, 2 lines or everything if needed --&gt;</span> 
+<span class="nt">&lt;/catalog_product_view&gt;</span></code></pre></div>
+
+<p>Once you’ve specified the handle you need to open a reference to the area you want to influence, the reference is the ‘name’ of the parent node. So still using catalog.xml and the catalog_product_view as an example:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;catalog/product_view&quot;</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span> <span class="na">template=</span><span class="s">&quot;catalog/product/view.phtml&quot;</span><span class="nt">&gt;</span>
+    ....
+    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;catalog/product_view_description&quot;</span> <span class="na">name=</span><span class="s">&quot;product.description&quot;</span> <span class="na">as=</span><span class="s">&quot;description&quot;</span> <span class="na">template=</span><span class="s">&quot;catalog/product/view/description.phtml&quot;</span><span class="nt">&gt;</span>
+    ....
+    <span class="nt">&lt;/block&gt;</span></code></pre></div>
+
+<p>In this case if we wanted to effect “product.description” we’d open up a reference to its parent “product.info” :</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;catalog_product_view&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- we can now effect anything inside this reference --&gt;</span>
+    <span class="nt">&lt;/reference&gt;</span>
+<span class="nt">&lt;/catalog_product_view&gt;</span></code></pre></div>
+
+<p>More often than not you’ll be calling a higher level reference such as “content”, “left” or “right”.</p>
+
+<p>One of the most common things you’ll need to do is either remove elements or move them around, so lets look at the best way of doing that.</p>
+<h3>"Definately wont be needing that"</h3>
+<p>If you absolutely do not need something in your templates you can call remove on it.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;catalog_product_view&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product.info&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;remove</span> <span class="na">name=</span><span class="s">&quot;product.description&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/reference&gt;</span>
+<span class="nt">&lt;/catalog_product_view&gt;</span></code></pre></div>
+
+<p>This means its completely removed from the theme, we can’t use it anywhere else, which in this case is possibly a bad idea, what if we just wanted to put it somewhere else?</p>
+<h3>"I wanna put that over there"</h3>
+<p>Say you don’t want the breadcrumbs rendering where they do normally, you want to put them in another reference you’ve styled differently, you’ve created the reference now you want to stick the breadcrumbs in there:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;default&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;unsetChild&quot;</span><span class="nt">&gt;&lt;name&gt;</span>breadcrumbs<span class="nt">&lt;/name&gt;&lt;/action&gt;</span>
+    <span class="nt">&lt;/reference&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;masthead.sub&quot;</span><span class="nt">&gt;</span>
+         <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;insert&quot;</span><span class="nt">&gt;&lt;child&gt;</span>breadcrumbs<span class="nt">&lt;/child&gt;&lt;/action&gt;</span>
+     <span class="nt">&lt;/reference&gt;</span>
+<span class="nt">&lt;/default&gt;</span></code></pre></div>
+
+<p>These sort of things are really handy as they stop you touching the template files which is always a good thing if you can get away with it.</p>
+<h3>"But I need to put that somewhere that doesn't have  a reference".</h3>
+<p>Why not create a new reference? I’ve found myself having to do this for things like “masthead” where theres an area between the normal header and the main page and I want to inject banners or other content to it. A lot of documentation tells you to add them to page.xml, but you can add them in your local.xml in the root reference:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;default&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;core/text_list&quot;</span> <span class="na">name=</span><span class="s">&quot;masthead&quot;</span> <span class="na">as=</span><span class="s">&quot;masthead&quot;</span> <span class="na">translate=</span><span class="s">&quot;label&quot;</span><span class="nt">&gt;</span>
+             <span class="nt">&lt;label&gt;</span>Masthead<span class="nt">&lt;/label&gt;</span>
+         <span class="nt">&lt;/block&gt;</span>
+     <span class="nt">&lt;/reference&gt;</span>
+<span class="nt">&lt;/default&gt;</span></code></pre></div>
+
+<p>For those that may not know the default handle effects every page on the site, and the root reference is, well its the very top reference. You can do other cool things here like set the default template for every page, within your local.xml</p>
+<h3>"Hey, everything has a 3 columns by default, most my pages are two column left"</h3>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;default&gt;</span>
+    <span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;root&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setTemplate&quot;</span><span class="nt">&gt;&lt;template&gt;</span>page/2column-left.phtml<span class="nt">&lt;/template&gt;&lt;/action&gt;</span>
+    <span class="nt">&lt;/reference&gt;</span>
+<span class="nt">&lt;/default&gt;</span></code></pre></div>
+
+<p>Boom! Everything will now be 2 column left unless overridden somewhere else, you can leave page.xml in the base theme.</p>
+<h2>Other Little Tricks</h2>
+<p>In Magento sometimes the little things can be the most frustrating, here are a couple of problems I’ve run into with some snippets to save the pain.</p>
+<h3>"The product grid is showing 3 items per row, dammit I need 4!"</h3>
+<p>This little nugget will help you here, I keep coming back to it so its actually good I have it published somewhere:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;reference</span> <span class="na">name=</span><span class="s">&quot;product_list&quot;</span><span class="nt">&gt;</span>
+     <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setColumnCount&quot;</span><span class="nt">&gt;&lt;count&gt;</span>4<span class="nt">&lt;/count&gt;&lt;/action&gt;</span>
+<span class="nt">&lt;/reference&gt;</span></code></pre></div>
+
+<h3>"If only I could wrap that block in another div and set a class on it"</h3>
+<p>Before you go reaching to override that template file just to wrap the block in a container for styling purposes, have a little consideration for this snippet. It’ll wrap your target block (myblock) in a div element and you can set a class on it:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;page/html_wrapper&quot;</span> <span class="na">name=</span><span class="s">&quot;myblock.wrapper&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;action</span> <span class="na">method=</span><span class="s">&quot;setElementClass&quot;</span><span class="nt">&gt;&lt;value&gt;</span>my-wrapper-classname<span class="nt">&lt;/value&gt;&lt;/action&gt;</span>
+    <span class="nt">&lt;block</span> <span class="na">type=</span><span class="s">&quot;page/html&quot;</span> <span class="na">name=</span><span class="s">&quot;myblock&quot;</span><span class="nt">/&gt;</span> <span class="c">&lt;!-- add your block in here --&gt;</span>
+<span class="nt">&lt;/block&gt;</span></code></pre></div>
+
+<h3>"I can't stands no more"</h3>
+<p>We’ll leave it there then, I hope the above helps someone as I’ve had to learn some of these lessons the hard way over the years, I’ll try and continue to put out stuff that will help beginner magento themers get it right the easy way in the future.</p>
+
+<p>Its important to note that we do poke fun at Magento for being difficult, but in reality its a massively complicated and immensely powerful platform, and in the right hands you can do amazing things, very quickly. You just need to train those hands.</p>
+
+<p>Futher Reading : <a href="http://magebase.com/magento-tutorials/demystifying-magentos-layout-xml-part-1/">http://magebase.com/magento-tutorials/demystifying-magentos-layout-xml-part-1/</a></p>
+
+        </div>
+
+    </article>
+
+</div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="l-constrain">
+
+    <img src="/images/profile.png" alt="" />
+
+    <h2 class="signature">
+       Ryan Hyslop
+       <span>Developer &amp; Designer</span>
+    </h2>
+
+    <a class="twitter" href="http://www.twitter.com/ryanhyslop">@ryanhyslop</a>
+
+
+  </div>
+
+</footer>
+
+<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+        user: 'ryanhyslop',
+        count: 10,
+        skip_forks: true,
+        target: '#github-repos'
+    });
+});
+</script>
+
+<script>
+var github = (function(){
+  function escapeHtml(str) {
+    return $('<div/>').text(str).html();
+  }
+  function render(target, repos){
+    var i = 0, fragment = '', t = $(target)[0];
+
+    for(i = 0; i < repos.length; i++) {
+      fragment += '<li><a href="'+repos[i].html_url+'">'+repos[i].name+'</a><p>'+escapeHtml(repos[i].description||'')+'</p></li>';
+    }
+    t.innerHTML = fragment;
+  }
+  return {
+    showRepos: function(options){
+      $.ajax({
+          url: "https://api.github.com/users/"+options.user+"/repos?sort=pushed&callback=?"
+        , dataType: 'jsonp'
+        , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+        , success: function(data) {
+          var repos = [];
+          if (!data || !data.data) { return; }
+          for (var i = 0; i < data.data.length; i++) {
+            if (options.skip_forks && data.data[i].fork) { continue; }
+            repos.push(data.data[i]);
+          }
+          if (options.count) { repos.splice(options.count); }
+          render(options.target, repos);
+        }
+      });
+    }
+  };
+})();
+</script>
+
+<script lang="Javascript">
+    function showLastfmFeed(json){
+        if(json.recenttracks == 'undefined'){
+            return
+        }
+
+        var tracklist = document.getElementById('lastfm-repos'),
+            content = '';
+
+        $.each(json.recenttracks.track, function(i, track){
+            content += '<li id="lastfmItem_'+i+'"><a href="'+ track.url + '">' + track.name +'</a> by '+ track.artist['#text'] + '</li>';
+        });
+
+        tracklist.innerHTML = content;
+    }
+</script>
+
+<script src="http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=ryu85&limit=10&api_key=158ae35ee8765aa3463a2e74cbb6d9d3&format=json&callback=showLastfmFeed"></script>
+
+
+<script src='dist/js/app.bundle.js'></script>
+
+
+</body>
+
+</html>

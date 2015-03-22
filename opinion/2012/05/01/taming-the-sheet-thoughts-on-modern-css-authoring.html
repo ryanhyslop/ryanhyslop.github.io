@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Taming the Sheet - Thoughts on modern CSS Authoring</title>
+  <meta name="description" content="One of the biggest challenges once a developer has a grasp of new language is how to implement it effectively and sensibly.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ryanhyslop.uk/opinion/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring.html">
+  <link rel="alternate" type="application/rss+xml" title="Ryan Hyslop - I Design & Develop Experiences For The Web" href="http://ryanhyslop.uk/feed.xml" />
+    <script src="//use.typekit.net/umi0wtn.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+
+<body>
+
+    <header role="banner" class="site-header site-header--small">
+    <div class="l-constrain">
+        <h1>
+            <a href="/">
+                <img src="/images/ryanhyslop.svg" alt="Ryan Hyslop"/>
+            </a>
+        </h1>
+        
+    </div>
+</header>
+
+
+
+<!-- <a class="page-link" href="/about/">About</a> -->
+
+
+
+
+
+
+
+
+
+
+    <div class="l-constrain l-constrain--inner">
+        <div role="main">
+            <div class="l-constrain">
+
+    <article class="article article--single">
+
+        <header class="article__header">
+            <h1 class="article__title">Taming the Sheet - Thoughts on modern CSS Authoring</h1>
+            <p class="article__date">May 1, 2012</p>
+        </header>
+
+        <div class="article__content">
+        <p>One of the biggest challenges once a developer has a grasp of new language is how to implement it effectively and sensibly.</p>
+
+<p>A lot of established languages have design patterns to draw upon, blueprints of code that experienced developers over time have curated as ‘best practice’. These patterns or approaches give newer developers a reference point to see how developing in a certain manner will be more effective.</p>
+
+<p>CSS has always lacked this, as by its very nature it is very flexible and the types of sites it can be applied to vary enormously, never the less browser implementation of more advanced CSS modules has exploded over the past 2 years and our stylesheets are growing as are the complexity of the websites we are building. We. Need. Order!
+<!--more-->
+Fortunately people are stepping back and thinking about how we can tame these unwieldily documents of hashes and dots. In my opinion there are 2 major areas in which, once considered, can dramatically change the way you author CSS, for the better of course.</p>
+<h2>1. Build Components, Not Pages.</h2>
+<p>The DRY principle is a foundation of software engineering, put simply if you’re writing the same stuff over and over again a voice in your head should be tutting disapprovingly and spurring you into thinking “Surely there’s a better way”, enter OOCSS.</p>
+
+<p>In production we’re historically used to developing pages individually, Ok thats the homepage done now lets look at the product page, our approach to building parts of these pages can generally be reflected in our Stylesheets and Markup</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nf">#home-products</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#catalog-index</span> <span class="nc">.product-list</span> <span class="nt">li</span><span class="p">{</span>
+    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+    <span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>These ( slightly exaggerated ) examples illustrate that we’ve styled up an area of the page based on either; where it is, or its function. The key issue here is, at a top level, these elements may have styles in common with other components, or these components could move within the site layout.</p>
+
+<p>Addressing these issues doesn’t require learning new techniques, syntax or properties, just a slight change in approach. By stepping back from the design and identifying layout and style patterns that can be abstracted into small classes that can be applied to multiple elements.</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.list-inline</span> <span class="o">&gt;</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Here we now have a more generic class that we can apply to anything that needs to be floated left with a margin, and this leads us on nicely to…</p>
+<h2>2. Form not Function.</h2>
+<p>Theres been quite a bit of discussion lately on the merit of ‘semantic classnames’ in css, usually with an arrest trial and execution of ‘.red {}’, but that could be the subject of another post entirely. There is a lot to be said however, for decoupling your class names from what it is your styling, and providing a classname that is more appropriate to the output.</p>
+
+<p>A Good example is:</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/*</span>
+<span class="c"> .callout</span>
+<span class="c"> - A base class to format areas that need to stand out from other content</span>
+<span class="c">*/</span>
+<span class="nc">.callout</span> <span class="p">{</span>
+    <span class="k">padding</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
+    <span class="k">margin-bottom</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
+    <span class="k">background</span><span class="o">:</span><span class="nb">black</span><span class="p">;</span>
+    <span class="k">color</span><span class="o">:</span><span class="nb">white</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.callout-important</span> <span class="p">{</span>
+    <span class="k">font-size</span><span class="o">:</span><span class="m">1</span><span class="o">.</span><span class="m">5</span><span class="n">rem</span><span class="p">;</span>
+    <span class="k">background</span><span class="o">:</span><span class="nb">red</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Here we are defining a class that’ll style an area of our site that stands out from the rest of the site, calling out, if you will. What this example further illustrates is the idea of establishing a ‘base’ class, and extending it with variations, we then apply these classes as follows:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout callout-important&quot;</span><span class="nt">&gt;</span></code></pre></div>
+
+<p>A personal favourite example of abstracting shared styles to a root class for sub classes to extend is one Harry Robberts ( @csswizardry ) demo’d on jsfiddle for buttons:</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* Buttons */</span>
+<span class="nc">.btn</span><span class="p">{</span>
+ <span class="k">font</span><span class="o">:</span><span class="k">inherit</span><span class="p">;</span> <span class="c">/* Normalise fonts across &lt;;a&gt;;s and form buttons. */</span>
+ <span class="k">text-decoration</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
+ <span class="k">cursor</span><span class="o">:</span><span class="k">pointer</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
+ <span class="k">border</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="c">/* Normalise border styles (or lack thereof). */</span>
+ <span class="k">line-height</span><span class="o">:</span><span class="m">1</span><span class="p">;</span> <span class="c">/* Remove line-height so we can size with padding. */</span>
+ <span class="k">display</span><span class="o">:</span><span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span> <span class="c">/* Normalise display state. */</span>
+ <span class="k">margin</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+ <span class="c">/* Cosmetics */</span>
+ <span class="k">padding</span><span class="o">:</span><span class="m">0.5em</span><span class="p">;</span> <span class="c">/* Set in ems so we can scale buttons up with font-size alone. */</span>
+ <span class="k">color</span><span class="o">:</span><span class="m">#fff</span><span class="p">;</span>
+ <span class="k">background-color</span><span class="o">:</span><span class="m">#ACE</span><span class="p">;</span>
+ <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">4px</span><span class="p">;</span>
+ <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
+ <span class="o">-</span><span class="n">moz</span><span class="o">-</span><span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
+ <span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
+<span class="p">}</span>
+ <span class="nc">.btn</span><span class="nd">:hover</span><span class="p">{</span>
+ <span class="k">background-color</span><span class="o">:</span><span class="m">#FAB</span><span class="p">;</span>
+ <span class="p">}</span>
+<span class="nc">.btn-sml</span> <span class="p">{</span> <span class="k">font-size</span><span class="o">:.</span><span class="m">75em</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.btn-lrg</span> <span class="p">{</span> <span class="k">font-size</span><span class="o">:</span><span class="m">1.5em</span><span class="p">;</span> <span class="p">}</span></code></pre></div>
+
+<p>Here we have 1 class, that when applied to either an anchor, input or button element will render the same style. If we need a bigger button, we create a sub class with any additional styles or overrides, and add both classes to the element.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">class=</span><span class="s">&quot;btn btn-sml&quot;</span><span class="nt">&gt;</span>Small button<span class="nt">&lt;/a&gt;</span></code></pre></div>
+
+<p>Wizardry indeed.</p>
+<h2>Organisation</h2>
+<p>A big challenge for yourself, and especially in a team is harmonising your coding preferences and style into a format that works best for everyone. Ultimately the key is to establish a convention and stick to it, I do feel though it slightly naive to stick to an approach you’ve developed yourself without looking at what other people are doing.</p>
+
+<p>In my opinion a landmark publication in this area is Jonathan Snooks‘ SMACSS.</p>
+
+<p>In its own words…</p>
+
+<p>“<em>SMACSS is a way to examine your design process and as a way to fit those rigid frameworks into a flexible thought process. It is an attempt to document a consistent approach to site development when using CSS</em>”</p>
+
+<p>I can’t recommend this book enough for an introduction into really considering how you write and organise your CSS. One of the huge benefits of Jonathans ( or Mr Snook, to give him his full Dr Suess name) approach is that its open to interpretation and it gives you ideas, but maintains a solid but transferable philosophy that advocates a modular coding style.</p>
+
+<p>Some of my takeaway points from SMACCS are:</p>
+<h3>Organisation of your code into:</h3>
+<ul>
+    <li>Base</li>
+    <li>Layout</li>
+    <li>Module</li>
+    <li>State</li>
+    <li>(Theme)</li>
+</ul>
+<p>This organisation reinforces the idea of the cascade and inheritance in CSS, and indeed the order in which your code should nest.</p>
+
+<p>The base provides your defaults, its styling to <em>elements</em> not classes, and will step up if you don’t provide any further styling with your modules. Layout houses your modules, it provides the grid, the structure for which the modules will sit.
+Your modules are “discrete component[s] of the page”, they are developed in a manner so they could be moved within a layout, or reused in varying contexts and still maintain their appearance. Modules can extend one another (as we’ve previously seen) to provide variance to a widget or component.</p>
+
+<p>Lastly state provides overruling styles, typically to a module, depending on what it should be communicating (eg.loading, success, error).</p>
+<h3>Prefixing of your layout rules &amp; namespacing of modules</h3>
+<p>Admittedly not something I’d given much thought till until I’d read SMACCS but one of those things that I’m taking for granted now. Our layout classes govern the structure of our site and so we can tell thats the case with our class names we prefix them:</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.l-main</span> <span class="p">{</span>
+<span class="k">width</span><span class="o">:</span><span class="m">70%</span><span class="p">;</span>
+<span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.l-sidebar</span> <span class="p">{</span>
+<span class="k">width</span><span class="o">:</span><span class="m">20%</span><span class="p">;</span>
+<span class="k">float</span><span class="o">:</span><span class="k">right</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.l-masthead</span> <span class="p">{</span>
+<span class="c">/* */</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Immediately when viewing our markup we can see these classes are providing layout rules to our elements:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;l-main&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout&quot;</span><span class="nt">&gt;&lt;p&gt;</span>Hello<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;l-sidebar&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout callout-minor&quot;</span><span class="nt">&gt;&lt;p&gt;</span>by the way..<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>The benefit of prefixing your layout rules (and state as we’ll see) is that modules, which make up the bulk of your site, can remain prefix less as we can assume if it hasn’t got a prefix, its a module. This lets us avoid things like:
+<em>.m-searchresult</em>
+or
+<em>.searchresult-obj</em></p>
+
+<p>Its just <em>.searchresult.</em></p>
+
+<p>How do we organise our modules then?</p>
+<h3>Namespacing</h3>
+<p>Taking our search result for example:</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.searchresult</span> <span class="p">{</span>
+ <span class="k">padding</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.searchresult-title</span> <span class="p">{</span>
+ <span class="k">color</span><span class="o">:</span><span class="nb">blue</span><span class="p">;</span>
+ <span class="k">margin-bottom</span><span class="o">:</span><span class="m">2em</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.searchresult-image</span> <span class="p">{</span>
+<span class="k">border</span><span class="o">:</span><span class="m">2px</span> <span class="k">solid</span> <span class="nb">orange</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Prefixing our modules components with its name is fairly self explanatory in its benefits, it keeps the code organised and we know exactly what it is applied to. Its specific, a bit, too, damn specific!</p>
+
+<p>The huge benefit to these low level selectors is that we can mix and match modules to reuse common design patterns throughout the site. Our search result example, since it has an image, would probably have an image and text inline with one another. This is a common pattern identified in Nicole Sullivan’s ‘media’ object ( <a href="http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/">more info</a> ), so really we could do something like this:</p>
+
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.media</span> <span class="p">{</span>
+ <span class="o">@</span><span class="n">extend</span> <span class="o">.</span><span class="n">clearfix</span> <span class="c">/* SASS inclusion of a clear fix for floated children */</span>
+<span class="p">}</span>
+<span class="nc">.media-img</span> <span class="p">{</span>
+ <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+ <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.media-content</span> <span class="p">{</span>
+ <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+<span class="p">}</span></code></pre></div>
+
+<p>And we could markup our search result as follows:</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media searchresult&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media-img searchresult-img&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;image.jpg&quot;</span> <span class="nt">/&gt;&lt;/div&gt;</span>
+ <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media-content&quot;</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;h2</span> <span class="na">class=</span><span class="s">&quot;searchresult-heading&quot;</span><span class="nt">&gt;</span>A result!<span class="nt">&lt;/h2&gt;</span>
+ <span class="nt">&lt;p&gt;</span>This is good, we found something<span class="nt">&lt;/p&gt;</span>
+ <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>Immediate reactions may be that theres a lot of classes for not a lot of styling, but the <em>massive</em> point here is it can be reused all over the site for similar design elements, we’re coding a pattern first and for most then adding the detail.</p>
+
+<p>Lastly an important lesson from SMACSS and indeed OOCSS approach as a whole is, if it hadn’t become obvious already, <strong>low specificity selectors</strong>.</p>
+
+<p>The benefit you gain here is that you avoid having to write long complicated selectors just because one before is overruling it. ID’s are the big villains here, and in your general day to day CSS coding you shouldn’t be using them.</p>
+
+<p>Indeed this approach comes with a challenge of its own, the order of your rules is now incredibly important. Rather than authoring your stylesheet ‘as you go’, you have to pay closer attention to the order in which things are defined. In our above search results example, we’d want our .searchresults module to override our .media module if it so chooses, this hierarchy of modules should also be reflected in our markup markup &lt;div class="media searchresult"&gt;, so its quite clear what is extending or overriding what without digging into the stylesheet.</p>
+
+<p>I’ve waltzed through quite a few things there, the main purpose was to clarify some of my own thoughts but I do hope it has some benefit to others. Its an exciting area, especially since it is just a change in approach, but there are so many benefits, problems and enhancements to discuss in one blog post so hopefully I’ll get to those in future updates.</p>
+
+<p>Comments are on and I’d love to hear any thoughts on this subject or specific posts, especially any issues people may have encountered adopting OOCSS.</p>
+
+<p>Further Reading:</p>
+<ul>
+    <li><a href="http://smacss.com/">SMACSS</a></li>
+    <li><a href="http://oocss.org/">OOCSS</a></li>
+    <li><a href="http://www.youtube.com/watch?v=R-BX4N8egEc&amp;list=UUMrzZG3q64oQmP_ouYn7yVA&amp;index=1&amp;feature=plcp">Harry Roberts - Big CSS</a></li>
+    <li><a href="http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/">The Media Object - Nicole Sullivan</a></li>
+</ul>
+<p> </p>
+
+        </div>
+
+    </article>
+
+</div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="l-constrain">
+
+    <img src="/images/profile.png" alt="" />
+
+    <h2 class="signature">
+       Ryan Hyslop
+       <span>Developer &amp; Designer</span>
+    </h2>
+
+    <a class="twitter" href="http://www.twitter.com/ryanhyslop">@ryanhyslop</a>
+
+
+  </div>
+
+</footer>
+
+<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+        user: 'ryanhyslop',
+        count: 10,
+        skip_forks: true,
+        target: '#github-repos'
+    });
+});
+</script>
+
+<script>
+var github = (function(){
+  function escapeHtml(str) {
+    return $('<div/>').text(str).html();
+  }
+  function render(target, repos){
+    var i = 0, fragment = '', t = $(target)[0];
+
+    for(i = 0; i < repos.length; i++) {
+      fragment += '<li><a href="'+repos[i].html_url+'">'+repos[i].name+'</a><p>'+escapeHtml(repos[i].description||'')+'</p></li>';
+    }
+    t.innerHTML = fragment;
+  }
+  return {
+    showRepos: function(options){
+      $.ajax({
+          url: "https://api.github.com/users/"+options.user+"/repos?sort=pushed&callback=?"
+        , dataType: 'jsonp'
+        , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+        , success: function(data) {
+          var repos = [];
+          if (!data || !data.data) { return; }
+          for (var i = 0; i < data.data.length; i++) {
+            if (options.skip_forks && data.data[i].fork) { continue; }
+            repos.push(data.data[i]);
+          }
+          if (options.count) { repos.splice(options.count); }
+          render(options.target, repos);
+        }
+      });
+    }
+  };
+})();
+</script>
+
+<script lang="Javascript">
+    function showLastfmFeed(json){
+        if(json.recenttracks == 'undefined'){
+            return
+        }
+
+        var tracklist = document.getElementById('lastfm-repos'),
+            content = '';
+
+        $.each(json.recenttracks.track, function(i, track){
+            content += '<li id="lastfmItem_'+i+'"><a href="'+ track.url + '">' + track.name +'</a> by '+ track.artist['#text'] + '</li>';
+        });
+
+        tracklist.innerHTML = content;
+    }
+</script>
+
+<script src="http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=ryu85&limit=10&api_key=158ae35ee8765aa3463a2e74cbb6d9d3&format=json&callback=showLastfmFeed"></script>
+
+
+<script src='dist/js/app.bundle.js'></script>
+
+
+</body>
+
+</html>

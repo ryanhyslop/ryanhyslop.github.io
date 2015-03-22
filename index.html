@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ryan Hyslop - I Design & Develop Experiences For The Web</title>
+  <meta name="description" content="I Design & Develop Experiences For The Web">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://ryanhyslop.uk/">
+  <link rel="alternate" type="application/rss+xml" title="Ryan Hyslop - I Design & Develop Experiences For The Web" href="http://ryanhyslop.uk/feed.xml" />
+    <script src="//use.typekit.net/umi0wtn.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+
+<body>
+
+    <header role="banner" class="site-header ">
+    <div class="l-constrain">
+        <h1>
+            <a href="/">
+                <img src="/images/ryanhyslop.svg" alt="Ryan Hyslop"/>
+            </a>
+        </h1>
+        
+        <h2 class="site-header__intro">
+            I design &amp; develop <em>experiences</em> on the web
+        </h2>
+        
+    </div>
+</header>
+
+
+
+<!-- <a class="page-link" href="/about/">About</a> -->
+
+
+
+
+
+
+
+
+
+
+
+    <div class="l-constrain l-constrain--inner">
+        <div role="main">
+              <section>
+
+      <h2 class="section-title">
+          <span>Articles</span>
+      </h2>
+
+    
+      <article class="article">
+
+          <header class="article__header">
+              <h3 class="h1 article__title">
+                  <a class="post-link" href="/jekyll/update/2015/01/24/welcome-to-jekyll.html">Welcome to Jekyll!</a>
+              </h3>
+
+              <time class="article__date">Jan 24, 2015</time>
+          </header>
+
+          <div class="article__body">
+              <p>You’ll find this post in your <code>_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code>jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+
+
+          </div>
+
+      </article>
+      
+      <article class="article">
+
+          <header class="article__header">
+              <h3 class="h1 article__title">
+                  <a class="post-link" href="/reflection,/review/2014/01/02/2013-a-retrospective.html">2013 - A retrospective</a>
+              </h3>
+
+              <time class="article__date">Jan 2, 2014</time>
+          </header>
+
+          <div class="article__body">
+              <p>These types of posts are a little bit cliche but I felt, given the fast moving pace of our industry and how it can continually feel like you don’t know enough, its important to reflect on how far you’ve come from time to time, and I suppose a new year brings that sentiment to the surface easier than other times.</p>
+
+
+          </div>
+
+      </article>
+      
+      <article class="article">
+
+          <header class="article__header">
+              <h3 class="h1 article__title">
+                  <a class="post-link" href="/magento/2012/10/25/magento-theming-working-with-layout.html">Magento Theming: Working With Layout</a>
+              </h3>
+
+              <time class="article__date">Oct 25, 2012</time>
+          </header>
+
+          <div class="article__body">
+              <p>Any frontend developer who’s taken a passive interest or a curious look into Magento theming will remember the moment when they recoiled and thought; “Honestly, wtf”.</p>
+
+
+          </div>
+
+      </article>
+      
+      <article class="article">
+
+          <header class="article__header">
+              <h3 class="h1 article__title">
+                  <a class="post-link" href="/opinion/2012/05/01/taming-the-sheet-thoughts-on-modern-css-authoring.html">Taming the Sheet - Thoughts on modern CSS Authoring</a>
+              </h3>
+
+              <time class="article__date">May 1, 2012</time>
+          </header>
+
+          <div class="article__body">
+              <p>One of the biggest challenges once a developer has a grasp of new language is how to implement it effectively and sensibly.</p>
+
+
+          </div>
+
+      </article>
+      
+
+  </section>
+
+  <!-- <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p> -->
+
+        </div>
+    </div>
+
+
+    <div class="l-constrain">
+        <div class="l-grid l-grid--2up">
+
+            <div class="l-grid-unit">
+                <div class="card">
+                    <h3 class="card__icon card__icon--github">Git hub</h3>
+                    <ul class="list" id="github-repos">
+                    </ul>
+                </div>
+            </div>
+
+            <div class="l-grid-unit">
+                <div class="card">
+                    <h3 class="card__icon card__icon--lastfm">Last.fm</h3>
+                    <ul class="list" id="lastfm-repos">
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <footer class="site-footer">
+
+  <div class="l-constrain">
+
+    <img src="/images/profile.png" alt="" />
+
+    <h2 class="signature">
+       Ryan Hyslop
+       <span>Developer &amp; Designer</span>
+    </h2>
+
+    <a class="twitter" href="http://www.twitter.com/ryanhyslop">@ryanhyslop</a>
+
+
+  </div>
+
+</footer>
+
+<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if (!window.jXHR){
+        var jxhr = document.createElement('script');
+        jxhr.type = 'text/javascript';
+        jxhr.src = '/javascripts/libs/jXHR.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(jxhr, s);
+    }
+
+    github.showRepos({
+        user: 'ryanhyslop',
+        count: 10,
+        skip_forks: true,
+        target: '#github-repos'
+    });
+});
+</script>
+
+<script>
+var github = (function(){
+  function escapeHtml(str) {
+    return $('<div/>').text(str).html();
+  }
+  function render(target, repos){
+    var i = 0, fragment = '', t = $(target)[0];
+
+    for(i = 0; i < repos.length; i++) {
+      fragment += '<li><a href="'+repos[i].html_url+'">'+repos[i].name+'</a><p>'+escapeHtml(repos[i].description||'')+'</p></li>';
+    }
+    t.innerHTML = fragment;
+  }
+  return {
+    showRepos: function(options){
+      $.ajax({
+          url: "https://api.github.com/users/"+options.user+"/repos?sort=pushed&callback=?"
+        , dataType: 'jsonp'
+        , error: function (err) { $(options.target + ' li.loading').addClass('error').text("Error loading feed"); }
+        , success: function(data) {
+          var repos = [];
+          if (!data || !data.data) { return; }
+          for (var i = 0; i < data.data.length; i++) {
+            if (options.skip_forks && data.data[i].fork) { continue; }
+            repos.push(data.data[i]);
+          }
+          if (options.count) { repos.splice(options.count); }
+          render(options.target, repos);
+        }
+      });
+    }
+  };
+})();
+</script>
+
+<script lang="Javascript">
+    function showLastfmFeed(json){
+        if(json.recenttracks == 'undefined'){
+            return
+        }
+
+        var tracklist = document.getElementById('lastfm-repos'),
+            content = '';
+
+        $.each(json.recenttracks.track, function(i, track){
+            content += '<li id="lastfmItem_'+i+'"><a href="'+ track.url + '">' + track.name +'</a> by '+ track.artist['#text'] + '</li>';
+        });
+
+        tracklist.innerHTML = content;
+    }
+</script>
+
+<script src="http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=ryu85&limit=10&api_key=158ae35ee8765aa3463a2e74cbb6d9d3&format=json&callback=showLastfmFeed"></script>
+
+
+<script src='dist/js/app.bundle.js'></script>
+
+
+</body>
+
+</html>

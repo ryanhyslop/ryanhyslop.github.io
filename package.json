@@ -1,0 +1,16 @@
+{
+  "name": "ryanhyslop.uk",
+  "version": "0.0.0",
+  "description": "Personal Site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^8.1.1",
+    "lodash": "^3.0.0",
+    "ampersand-model": "^4.0.3"
+  }
+}
