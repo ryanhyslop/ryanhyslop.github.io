@@ -1,34 +1,126 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-  // ./my-project/app.js
-  console.log('Welcome to my application')
+// Last.Fm
+var LastFmCollection = require('./lastfm/lastfm.collection');
+var LastFmView = require('./lastfm/lastfm.views');
+var lastFmCollection = new LastFmCollection();
 
-  // require the local module
-  var LastFmCollection = require('./collections/lastfm');
+// Github
+var GithubCollection = require('./github/github.collection');
+var GithubView = require('./github/github.view');
+var githubCollection = new GithubCollection();
 
-  var collection = new LastFmCollection();
+// Namespace
+var RH = RH || {};
+RH.views = {};
 
 
-    collection.fetch({
-        success: function(data){
-            console.log(data);
-            // debugger;
+// Initialise
+RH.views.lastFm = new LastFmView({ el: document.getElementById('lastfm'), collection: lastFmCollection}).render();
+
+RH.views.github = new GithubView({ el: document.getElementById('github'), collection: githubCollection}).render();
+
+},{"./github/github.collection":2,"./github/github.view":5,"./lastfm/lastfm.collection":6,"./lastfm/lastfm.views":9}],2:[function(require,module,exports){
+var GithubModel = require('./github.model');
+var _ = require("lodash");
+var Collection = require("ampersand-rest-collection");
+
+var LastFmCollection = Collection.extend({
+    model: GithubModel,
+    url: 'https://api.github.com/users/ryanhyslop/repos?sort=updated',
+    initialize: function(){
+        this.fetch();
+    },
+    parse: function(data) {
+        var results =  _.map(data, function(repo) {
+            return {
+                title: repo.name,
+                description: repo.description,
+                link: repo.html_url
+            };
+        });
+
+        return results.slice(0, 7);
+    }
+});
+
+module.exports = LastFmCollection;
+
+},{"./github.model":3,"ampersand-rest-collection":37,"lodash":91}],3:[function(require,module,exports){
+var Model = require('ampersand-model');
+
+module.exports = Model.extend({
+    props: {
+        title: 'string',
+        link: 'string',
+        description: 'string'
+    }
+});
+
+},{"ampersand-model":16}],4:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<li>\n    <a data-hook=\"link\">\n      <span data-hook=\"title\"></span>\n    </a>\n    <p data-hook=\"description\"></p>\n</li>\n";
+  });
+
+},{"hbsfy/runtime":90}],5:[function(require,module,exports){
+var AmpersandView = require('ampersand-view');
+
+// some views for individual items in the collection
+var ItemView = AmpersandView.extend({
+    template: require('./github.template.hbs'),
+    bindings: {
+        'model.title': '[data-hook=title]',
+        'model.description': '[data-hook=description]',
+        'model.link': {
+            type: 'attribute',
+            hook: 'link',
+            name: 'href'
         }
-    });
+      }
+});
 
-},{"./collections/lastfm":2}],2:[function(require,module,exports){
-var LastFmModel = require('../models/lastfm');
+// the main view
+var LastFmView = AmpersandView.extend({
+    template: '<ul class="list github"></ul>',
+    render: function (opts) {
+        // render our template as usual
+        this.renderWithTemplate(this);
+        debugger;
+        var collectionView = this.renderCollection(this.collection, ItemView, this.el.querySelector('ul'), opts);
+        return this;
+    }
+});
+
+module.exports = LastFmView;
+
+},{"./github.template.hbs":4,"ampersand-view":56}],6:[function(require,module,exports){
+var LastFmModel = require('./lastfm.model');
 var _ = require("lodash");
 var Collection = require("ampersand-rest-collection");
 
 var LastFmCollection = Collection.extend({
     model: LastFmModel,
     url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=ryu85&limit=10&api_key=158ae35ee8765aa3463a2e74cbb6d9d3&format=json',
+    initialize: function(){
+        this.fetch();
+    },
     parse: function(data) {
         return _.map(data.recenttracks.track, function(track) {
+
+            var nowplaying =  (track['@attr']) ? track['@attr'].nowplaying : false;
+
             return {
                 track: track.name,
                 artist: track.artist['#text'],
-                link: track.url
+                cover: track.image[0]['#text'],
+                link: track.url,
+                playing: Boolean(nowplaying)
             }
         });
     }
@@ -36,60 +128,69 @@ var LastFmCollection = Collection.extend({
 
 module.exports = LastFmCollection;
 
-
-// {
-//   "recenttracks": {
-//     "track": [
-//       {
-//         "artist": {
-//           "#text": "Third Eye Blind",
-//           "mbid": "92a42e82-b36f-4308-82c1-68bad2e03c89"
-//         },
-//         "name": "Danger",
-//         "streamable": "0",
-//         "mbid": "4ae2013a-a477-4aaf-ab02-179f97ed3625",
-//         "album": {
-//           "#text": "Out of the Vein",
-//           "mbid": "ec0fb052-5d96-41cb-aca4-ab2fd601365f"
-//         },
-//         "url": "http://www.last.fm/music/Third+Eye+Blind/_/Danger",
-//         "image": [
-//           {
-//             "#text": "http://userserve-ak.last.fm/serve/34s/94701239.jpg",
-//             "size": "small"
-//           },
-//           {
-//             "#text": "http://userserve-ak.last.fm/serve/64s/94701239.jpg",
-//             "size": "medium"
-//           },
-//           {
-//             "#text": "http://userserve-ak.last.fm/serve/126/94701239.jpg",
-//             "size": "large"
-//           },
-//           {
-//             "#text": "http://userserve-ak.last.fm/serve/300x300/94701239.jpg",
-//             "size": "extralarge"
-//           }
-//         ],
-//         "@attr": {
-//           "nowplaying": "true"
-//         }
-//       }
-//   }
-// }
-
-},{"../models/lastfm":3,"ampersand-rest-collection":31,"lodash":54}],3:[function(require,module,exports){
+},{"./lastfm.model":7,"ampersand-rest-collection":37,"lodash":91}],7:[function(require,module,exports){
 var Model = require('ampersand-model');
 
 module.exports = Model.extend({
     props: {
         track: 'string',
         artist: 'string',
-        link: 'string'
+        link: 'string',
+        cover: 'string',
+        playing: 'boolean'
     }
 });
 
-},{"ampersand-model":10}],4:[function(require,module,exports){
+},{"ampersand-model":16}],8:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<li>\n  <div class='flag'>\n    <div class='flag__img'>\n      <img data-hook='cover' class='' />\n    </div>\n    <div class='flag__body'>\n      <a href='' data-hook='link'><span data-hook='track'></span></a> - <span data-hook='artist'></span>\n    </div>\n  </div>\n</li>\n";
+  });
+
+},{"hbsfy/runtime":90}],9:[function(require,module,exports){
+var AmpersandView = require('ampersand-view');
+
+// some views for individual items in the collection
+var ItemView = AmpersandView.extend({
+    template: require('./lastfm.template.hbs'),
+    bindings: {
+        'model.track': '[data-hook=track]',
+        'model.artist': '[data-hook=artist]',
+        'model.playing': '[data-hook=playing]',
+        'model.link': {
+            type: 'attribute',
+            hook: 'link',
+            name: 'href'
+        },
+        'model.cover': {
+          type: 'attribute',
+          hook: 'cover',
+          name: 'src'
+        }
+      }
+});
+
+// the main view
+var LastFmView = AmpersandView.extend({
+    template: '<ul class="list lastfm"></ul>',
+    render: function (opts) {
+        // render our template as usual
+        this.renderWithTemplate(this);
+
+        var collectionView = this.renderCollection(this.collection, ItemView, this.el.querySelector('ul'), opts);
+        return this;
+    }
+});
+
+module.exports = LastFmView;
+
+},{"./lastfm.template.hbs":8,"ampersand-view":56}],10:[function(require,module,exports){
 var BackboneEvents = require('backbone-events-standalone');
 var classExtend = require('ampersand-class-extend');
 var isArray = require('is-array');
@@ -442,7 +543,7 @@ Collection.extend = classExtend;
 
 module.exports = Collection;
 
-},{"ampersand-class-extend":5,"backbone-events-standalone":7,"extend-object":8,"is-array":9}],5:[function(require,module,exports){
+},{"ampersand-class-extend":11,"backbone-events-standalone":13,"extend-object":14,"is-array":15}],11:[function(require,module,exports){
 var objectExtend = require('extend-object');
 
 
@@ -492,7 +593,7 @@ var extend = function(protoProps) {
 // Expose the extend function
 module.exports = extend;
 
-},{"extend-object":8}],6:[function(require,module,exports){
+},{"extend-object":14}],12:[function(require,module,exports){
 /**
  * Standalone extraction of Backbone.Events, no external dependency required.
  * Degrades nicely when Backone/underscore are already available in the current
@@ -760,10 +861,10 @@ module.exports = extend;
   }
 })(this);
 
-},{}],7:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = require('./backbone-events-standalone');
 
-},{"./backbone-events-standalone":6}],8:[function(require,module,exports){
+},{"./backbone-events-standalone":12}],14:[function(require,module,exports){
 var arr = [];
 var each = arr.forEach;
 var slice = arr.slice;
@@ -780,7 +881,7 @@ module.exports = function(obj) {
     return obj;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 /**
  * isArray
@@ -815,7 +916,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],10:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 ;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-model"] = window.ampersand["ampersand-model"] || [];  window.ampersand["ampersand-model"].push("4.0.3");}
 var State = require('ampersand-state');
 var _ = require('underscore');
@@ -949,7 +1050,7 @@ var wrapError = function (model, options) {
 
 module.exports = Model;
 
-},{"ampersand-state":11,"ampersand-sync":16,"underscore":30}],11:[function(require,module,exports){
+},{"ampersand-state":17,"ampersand-sync":22,"underscore":36}],17:[function(require,module,exports){
 ;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-state"] = window.ampersand["ampersand-state"] || [];  window.ampersand["ampersand-state"].push("4.4.4");}
 var _ = require('underscore');
 var BBEvents = require('backbone-events-standalone');
@@ -1725,7 +1826,7 @@ Base.extend = extend;
 // Our main exports
 module.exports = Base;
 
-},{"array-next":12,"backbone-events-standalone":14,"key-tree-store":15,"underscore":30}],12:[function(require,module,exports){
+},{"array-next":18,"backbone-events-standalone":20,"key-tree-store":21,"underscore":36}],18:[function(require,module,exports){
 module.exports = function arrayNext(array, currentItem) {
     var len = array.length;
     var newIndex = array.indexOf(currentItem) + 1;
@@ -1733,11 +1834,11 @@ module.exports = function arrayNext(array, currentItem) {
     return array[newIndex];
 };
 
-},{}],13:[function(require,module,exports){
-arguments[4][6][0].apply(exports,arguments)
-},{"dup":6}],14:[function(require,module,exports){
-arguments[4][7][0].apply(exports,arguments)
-},{"./backbone-events-standalone":13,"dup":7}],15:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}],20:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"./backbone-events-standalone":19,"dup":13}],21:[function(require,module,exports){
 function KeyTreeStore() {
     this.storage = {};
 }
@@ -1778,7 +1879,7 @@ KeyTreeStore.prototype.get = function (keypath) {
 
 module.exports = KeyTreeStore;
 
-},{}],16:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var _ = require('underscore');
 var xhr = require('xhr');
 var qs = require('qs');
@@ -1899,10 +2000,10 @@ var methodMap = {
     'read':   'GET'
 };
 
-},{"qs":17,"underscore":22,"xhr":23}],17:[function(require,module,exports){
+},{"qs":23,"underscore":28,"xhr":29}],23:[function(require,module,exports){
 module.exports = require('./lib');
 
-},{"./lib":18}],18:[function(require,module,exports){
+},{"./lib":24}],24:[function(require,module,exports){
 // Load modules
 
 var Stringify = require('./stringify');
@@ -1919,7 +2020,7 @@ module.exports = {
     parse: Parse
 };
 
-},{"./parse":19,"./stringify":20}],19:[function(require,module,exports){
+},{"./parse":25,"./stringify":26}],25:[function(require,module,exports){
 // Load modules
 
 var Utils = require('./utils');
@@ -2076,7 +2177,7 @@ module.exports = function (str, depth, delimiter) {
     return Utils.compact(obj);
 };
 
-},{"./utils":21}],20:[function(require,module,exports){
+},{"./utils":27}],26:[function(require,module,exports){
 (function (Buffer){
 // Load modules
 
@@ -2135,7 +2236,7 @@ module.exports = function (obj, delimiter) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":50}],21:[function(require,module,exports){
+},{"buffer":79}],27:[function(require,module,exports){
 (function (Buffer){
 // Load modules
 
@@ -2272,7 +2373,7 @@ exports.compact = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":50}],22:[function(require,module,exports){
+},{"buffer":79}],28:[function(require,module,exports){
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -3617,7 +3718,7 @@ exports.compact = function (obj) {
   }
 }).call(this);
 
-},{}],23:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var window = require("global/window")
 var once = require("once")
 var parseHeaders = require('parse-headers')
@@ -3796,7 +3897,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":24,"once":25,"parse-headers":29}],24:[function(require,module,exports){
+},{"global/window":30,"once":31,"parse-headers":35}],30:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
@@ -3809,7 +3910,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],25:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -3830,7 +3931,7 @@ function once (fn) {
   }
 }
 
-},{}],26:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -3878,7 +3979,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":27}],27:[function(require,module,exports){
+},{"is-function":33}],33:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -3895,7 +3996,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],28:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -3911,7 +4012,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],29:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -3943,7 +4044,7 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":26,"trim":28}],30:[function(require,module,exports){
+},{"for-each":32,"trim":34}],36:[function(require,module,exports){
 //     Underscore.js 1.7.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -5360,7 +5461,7 @@ module.exports = function (headers) {
   }
 }.call(this));
 
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 ;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-rest-collection"] = window.ampersand["ampersand-rest-collection"] || [];  window.ampersand["ampersand-rest-collection"].push("2.0.4");}
 var Collection = require('ampersand-collection');
 var underscoreMixin = require('ampersand-collection-underscore-mixin');
@@ -5369,7 +5470,7 @@ var restMixins = require('ampersand-collection-rest-mixin');
 
 module.exports = Collection.extend(underscoreMixin, restMixins);
 
-},{"ampersand-collection":4,"ampersand-collection-rest-mixin":32,"ampersand-collection-underscore-mixin":48}],32:[function(require,module,exports){
+},{"ampersand-collection":10,"ampersand-collection-rest-mixin":38,"ampersand-collection-underscore-mixin":54}],38:[function(require,module,exports){
 ;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-collection-rest-mixin"] = window.ampersand["ampersand-collection-rest-mixin"] || [];  window.ampersand["ampersand-collection-rest-mixin"].push("3.0.1");}
 var sync = require('ampersand-sync');
 var extend = require('extend-object');
@@ -5471,37 +5572,37 @@ module.exports = {
     }
 };
 
-},{"ampersand-sync":33,"extend-object":47}],33:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-},{"dup":16,"qs":34,"underscore":39,"xhr":40}],34:[function(require,module,exports){
-arguments[4][17][0].apply(exports,arguments)
-},{"./lib":35,"dup":17}],35:[function(require,module,exports){
-arguments[4][18][0].apply(exports,arguments)
-},{"./parse":36,"./stringify":37,"dup":18}],36:[function(require,module,exports){
-arguments[4][19][0].apply(exports,arguments)
-},{"./utils":38,"dup":19}],37:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
-},{"buffer":50,"dup":20}],38:[function(require,module,exports){
-arguments[4][21][0].apply(exports,arguments)
-},{"buffer":50,"dup":21}],39:[function(require,module,exports){
+},{"ampersand-sync":39,"extend-object":53}],39:[function(require,module,exports){
 arguments[4][22][0].apply(exports,arguments)
-},{"dup":22}],40:[function(require,module,exports){
+},{"dup":22,"qs":40,"underscore":45,"xhr":46}],40:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
-},{"dup":23,"global/window":41,"once":42,"parse-headers":46}],41:[function(require,module,exports){
+},{"./lib":41,"dup":23}],41:[function(require,module,exports){
 arguments[4][24][0].apply(exports,arguments)
-},{"dup":24}],42:[function(require,module,exports){
+},{"./parse":42,"./stringify":43,"dup":24}],42:[function(require,module,exports){
 arguments[4][25][0].apply(exports,arguments)
-},{"dup":25}],43:[function(require,module,exports){
+},{"./utils":44,"dup":25}],43:[function(require,module,exports){
 arguments[4][26][0].apply(exports,arguments)
-},{"dup":26,"is-function":44}],44:[function(require,module,exports){
+},{"buffer":79,"dup":26}],44:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
-},{"dup":27}],45:[function(require,module,exports){
+},{"buffer":79,"dup":27}],45:[function(require,module,exports){
 arguments[4][28][0].apply(exports,arguments)
 },{"dup":28}],46:[function(require,module,exports){
 arguments[4][29][0].apply(exports,arguments)
-},{"dup":29,"for-each":43,"trim":45}],47:[function(require,module,exports){
-arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],48:[function(require,module,exports){
+},{"dup":29,"global/window":47,"once":48,"parse-headers":52}],47:[function(require,module,exports){
+arguments[4][30][0].apply(exports,arguments)
+},{"dup":30}],48:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"dup":31}],49:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"dup":32,"is-function":50}],50:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],51:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"dup":34}],52:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"dup":35,"for-each":49,"trim":51}],53:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"dup":14}],54:[function(require,module,exports){
 ;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-collection-underscore-mixin"] = window.ampersand["ampersand-collection-underscore-mixin"] || [];  window.ampersand["ampersand-collection-underscore-mixin"].push("1.0.3");}
 var _ = require('underscore');
 var slice = [].slice;
@@ -5568,9 +5669,2505 @@ mixins.pluck = function (attr) {
 
 module.exports = mixins;
 
-},{"underscore":49}],49:[function(require,module,exports){
-arguments[4][30][0].apply(exports,arguments)
-},{"dup":30}],50:[function(require,module,exports){
+},{"underscore":55}],55:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"dup":36}],56:[function(require,module,exports){
+;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-view"] = window.ampersand["ampersand-view"] || [];  window.ampersand["ampersand-view"].push("7.2.0");}
+var State = require('ampersand-state');
+var CollectionView = require('ampersand-collection-view');
+var domify = require('domify');
+var _ = require('underscore');
+var events = require('events-mixin');
+var matches = require('matches-selector');
+var bindings = require('ampersand-dom-bindings');
+var getPath = require('get-object-path');
+
+
+function View(attrs) {
+    this.cid = _.uniqueId('view');
+    attrs || (attrs = {});
+    var parent = attrs.parent;
+    delete attrs.parent;
+    BaseState.call(this, attrs, {init: false, parent: parent});
+    this.on('change:el', this._handleElementChange, this);
+    this._parsedBindings = bindings(this.bindings, this);
+    this._initializeBindings();
+    if (attrs.el && !this.autoRender) {
+        this._handleElementChange();
+    }
+    this._initializeSubviews();
+    this.template = attrs.template || this.template;
+    this.initialize.apply(this, arguments);
+    this.set(_.pick(attrs, viewOptions));
+    if (this.autoRender && this.template) {
+        this.render();
+    }
+}
+
+var BaseState = State.extend({
+    dataTypes: {
+        element: {
+            set: function (newVal) {
+                return {
+                    val: newVal,
+                    type: newVal instanceof Element ? 'element' : typeof newVal
+                };
+            },
+            compare: function (el1, el2) {
+                return el1 === el2;
+            }
+        },
+        collection: {
+            set: function (newVal) {
+                return {
+                    val: newVal,
+                    type: newVal && newVal.isCollection ? 'collection' : typeof newVal
+                };
+            },
+            compare: function (currentVal, newVal) {
+                return currentVal === newVal;
+            }
+        }
+    },
+    props: {
+        model: 'state',
+        el: 'element',
+        collection: 'collection'
+    },
+    derived: {
+        rendered: {
+            deps: ['el'],
+            fn: function () {
+                return !!this.el;
+            }
+        },
+        hasData: {
+            deps: ['model'],
+            fn: function () {
+                return !!this.model;
+            }
+        }
+    }
+});
+
+// Cached regex to split keys for `delegate`.
+var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+
+// List of view options to be merged as properties.
+var viewOptions = ['model', 'collection', 'el'];
+
+View.prototype = Object.create(BaseState.prototype);
+
+// Set up all inheritable properties and methods.
+_.extend(View.prototype, {
+    // ## query
+    // Get an single element based on CSS selector scoped to this.el
+    // if you pass an empty string it return `this.el`.
+    // If you pass an element we just return it back.
+    // This lets us use `get` to handle cases where users
+    // can pass a selector or an already selected element.
+    query: function (selector) {
+        if (!selector) return this.el;
+        if (typeof selector === 'string') {
+            if (matches(this.el, selector)) return this.el;
+            return this.el.querySelector(selector) || undefined;
+        }
+        return selector;
+    },
+
+    // ## queryAll
+    // Returns an array of elements based on CSS selector scoped to this.el
+    // if you pass an empty string it return `this.el`. Also includes root
+    // element.
+    queryAll: function (selector) {
+        var res = [];
+        if (!this.el) return res;
+        if (selector === '') return [this.el];
+        if (matches(this.el, selector)) res.push(this.el);
+        return res.concat(Array.prototype.slice.call(this.el.querySelectorAll(selector)));
+    },
+
+    // ## queryByHook
+    // Convenience method for fetching element by it's `data-hook` attribute.
+    // Also tries to match against root element.
+    // Also supports matching 'one' of several space separated hooks.
+    queryByHook: function (hook) {
+        return this.query('[data-hook~="' + hook + '"]');
+    },
+
+    // Initialize is an empty function by default. Override it with your own
+    // initialization logic.
+    initialize: function () {},
+
+    // **render** is the core function that your view can override, its job is
+    // to populate its element (`this.el`), with the appropriate HTML.
+    render: function () {
+        this.renderWithTemplate(this);
+        return this;
+    },
+
+    // Remove this view by taking the element out of the DOM, and removing any
+    // applicable events listeners.
+    remove: function () {
+        var parsedBindings = this._parsedBindings;
+        if (this.el && this.el.parentNode) this.el.parentNode.removeChild(this.el);
+        if (this._subviews) _.chain(this._subviews).flatten().invoke('remove');
+        this.stopListening();
+        // TODO: Not sure if this is actually necessary.
+        // Just trying to de-reference this potentially large
+        // amount of generated functions to avoid memory leaks.
+        _.each(parsedBindings, function (properties, modelName) {
+            _.each(properties, function (value, key) {
+                delete parsedBindings[modelName][key];
+            });
+            delete parsedBindings[modelName];
+        });
+        this.trigger('remove', this);
+        return this;
+    },
+
+    // Change the view's element (`this.el` property), including event
+    // re-delegation.
+    _handleElementChange: function (element, delegate) {
+        if (this.eventManager) this.eventManager.unbind();
+        this.eventManager = events(this.el, this);
+        this.delegateEvents();
+        this._applyBindingsForKey();
+        return this;
+    },
+
+    // Set callbacks, where `this.events` is a hash of
+    //
+    // *{"event selector": "callback"}*
+    //
+    //     {
+    //       'mousedown .title':  'edit',
+    //       'click .button':     'save',
+    //       'click .open':       function (e) { ... }
+    //     }
+    //
+    // pairs. Callbacks will be bound to the view, with `this` set properly.
+    // Uses event delegation for efficiency.
+    // Omitting the selector binds the event to `this.el`.
+    // This only works for delegate-able events: not `focus`, `blur`, and
+    // not `change`, `submit`, and `reset` in Internet Explorer.
+    delegateEvents: function (events) {
+        if (!(events || (events = _.result(this, 'events')))) return this;
+        this.undelegateEvents();
+        for (var key in events) {
+            this.eventManager.bind(key, events[key]);
+        }
+        return this;
+    },
+
+    // Clears all callbacks previously bound to the view with `delegateEvents`.
+    // You usually don't need to use this, but may wish to if you have multiple
+    // Backbone views attached to the same DOM element.
+    undelegateEvents: function () {
+        this.eventManager.unbind();
+        return this;
+    },
+
+    // ## registerSubview
+    // Pass it a view. This can be anything with a `remove` method
+    registerSubview: function (view) {
+        // Storage for our subviews.
+        this._subviews || (this._subviews = []);
+        this._subviews.push(view);
+        // If view has an 'el' it's a single view not
+        // an array of views registered by renderCollection
+        // so we store a reference to the parent view.
+        if (view.el) view.parent = this;
+        return view;
+    },
+
+    // ## renderSubview
+    // Pass it a view instance and a container element
+    // to render it in. It's `remove` method will be called
+    // when the parent view is destroyed.
+    renderSubview: function (view, container) {
+        if (typeof container === 'string') {
+            container = this.query(container);
+        }
+        this.registerSubview(view);
+        view.render();
+        (container || this.el).appendChild(view.el);
+        return view;
+    },
+
+    _applyBindingsForKey: function (name) {
+        if (!this.el) return;
+        var fns = this._parsedBindings.getGrouped(name);
+        var item;
+        for (item in fns) {
+            fns[item].forEach(function (fn) {
+                fn(this.el, getPath(this, item), _.last(item.split('.')));
+            }, this);
+        }
+    },
+
+    _initializeBindings: function () {
+        if (!this.bindings) return;
+        this.on('all', function (eventName) {
+            if (eventName.slice(0, 7) === 'change:') {
+                this._applyBindingsForKey(eventName.split(':')[1]);
+            }
+        }, this);
+    },
+
+    // ## _initializeSubviews
+    // this is called at setup and grabs declared subviews
+    _initializeSubviews: function () {
+        if (!this.subviews) return;
+        for (var item in this.subviews) {
+            this._parseSubview(this.subviews[item], item);
+        }
+    },
+
+    // ## _parseSubview
+    // helper for parsing out the subview declaration and registering
+    // the `waitFor` if need be.
+    _parseSubview: function (subview, name) {
+        var self = this;
+        var opts = {
+            selector: subview.container || '[data-hook="' + subview.hook + '"]',
+            waitFor: subview.waitFor || '',
+            prepareView: subview.prepareView || function (el) {
+                return new subview.constructor({
+                    el: el,
+                    parent: self
+                });
+            }
+        };
+        function action() {
+            var el, subview;
+            // if not rendered or we can't find our element, stop here.
+            if (!this.el || !(el = this.query(opts.selector))) return;
+            if (!opts.waitFor || getPath(this, opts.waitFor)) {
+                subview = this[name] = opts.prepareView.call(this, el);
+                subview.render();
+                this.registerSubview(subview);
+                this.off('change', action);
+            }
+        }
+        // we listen for main `change` items
+        this.on('change', action, this);
+    },
+
+
+    // Shortcut for doing everything we need to do to
+    // render and fully replace current root element.
+    // Either define a `template` property of your view
+    // or pass in a template directly.
+    // The template can either be a string or a function.
+    // If it's a function it will be passed the `context`
+    // argument.
+    renderWithTemplate: function (context, templateArg) {
+        var template = templateArg || this.template;
+        if (!template) throw new Error('Template string or function needed.');
+        var newDom = _.isString(template) ? template : template.call(this, context || this);
+        if (_.isString(newDom)) newDom = domify(newDom);
+        var parent = this.el && this.el.parentNode;
+        if (parent) parent.replaceChild(newDom, this.el);
+        if (newDom.nodeName === '#document-fragment') throw new Error('Views can only have one root element.');
+        this.el = newDom;
+        return this;
+    },
+
+    // ## cacheElements
+    // This is a shortcut for adding reference to specific elements within your view for
+    // access later. This avoids excessive DOM queries and makes it easier to update
+    // your view if your template changes.
+    //
+    // In your `render` method. Use it like so:
+    //
+    //     render: function () {
+    //       this.basicRender();
+    //       this.cacheElements({
+    //         pages: '#pages',
+    //         chat: '#teamChat',
+    //         nav: 'nav#views ul',
+    //         me: '#me',
+    //         cheatSheet: '#cheatSheet',
+    //         omniBox: '#awesomeSauce'
+    //       });
+    //     }
+    //
+    // Then later you can access elements by reference like so: `this.pages`, or `this.chat`.
+    cacheElements: function (hash) {
+        for (var item in hash) {
+            this[item] = this.query(hash[item]);
+        }
+    },
+
+    // ## listenToAndRun
+    // Shortcut for registering a listener for a model
+    // and also triggering it right away.
+    listenToAndRun: function (object, events, handler) {
+        var bound = _.bind(handler, this);
+        this.listenTo(object, events, bound);
+        bound();
+    },
+
+    // ## animateRemove
+    // Placeholder for if you want to do something special when they're removed.
+    // For example fade it out, etc.
+    // Any override here should call `.remove()` when done.
+    animateRemove: function () {
+        this.remove();
+    },
+
+    // ## renderCollection
+    // Method for rendering a collections with individual views.
+    // Just pass it the collection, and the view to use for the items in the
+    // collection. The collectionView is returned.
+    renderCollection: function (collection, ViewClass, container, opts) {
+        var containerEl = (typeof container === 'string') ? this.query(container) : container;
+        var config = _.extend({
+            collection: collection,
+            el: containerEl || this.el,
+            view: ViewClass,
+            parent: this,
+            viewOptions: {
+                parent: this
+            }
+        }, opts);
+        var collectionView = new CollectionView(config);
+        collectionView.render();
+        return this.registerSubview(collectionView);
+    }
+});
+
+View.extend = BaseState.extend;
+module.exports = View;
+
+},{"ampersand-collection-view":57,"ampersand-dom-bindings":62,"ampersand-state":65,"domify":70,"events-mixin":71,"get-object-path":76,"matches-selector":77,"underscore":78}],57:[function(require,module,exports){
+;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-collection-view"] = window.ampersand["ampersand-collection-view"] || [];  window.ampersand["ampersand-collection-view"].push("1.2.1");}
+var _ = require('underscore');
+var BBEvents = require('backbone-events-standalone');
+var ampExtend = require('ampersand-class-extend');
+
+// options
+var options = ['collection', 'el', 'viewOptions', 'view', 'emptyView', 'filter', 'reverse', 'parent'];
+
+
+function CollectionView(spec) {
+    if (!spec) {
+        throw new ReferenceError('Collection view missing required parameters: collection, el');
+    }
+    if (!spec.collection) {
+        throw new ReferenceError('Collection view requires a collection');
+    }
+    if (!spec.el && !this.insertSelf) {
+        throw new ReferenceError('Collection view requires an el');
+    }
+    _.extend(this, _.pick(spec, options));
+    this.views = [];
+    this.listenTo(this.collection, 'add', this._addViewForModel);
+    this.listenTo(this.collection, 'remove', this._removeViewForModel);
+    this.listenTo(this.collection, 'sort', this._rerenderAll);
+    this.listenTo(this.collection, 'refresh reset', this._reset);
+}
+
+_.extend(CollectionView.prototype, BBEvents, {
+    // for view contract compliance
+    render: function () {
+        this._renderAll();
+        return this;
+    },
+    remove: function () {
+        _.invoke(this.views, 'remove');
+        this.stopListening();
+    },
+    _getViewByModel: function (model) {
+        return _.find(this.views, function (view) {
+            return model === view.model;
+        });
+    },
+    _createViewForModel: function (model, renderOpts) {
+        var view = new this.view(_({model: model, collection: this.collection}).extend(this.viewOptions));
+        this.views.push(view);
+        view.parent = this;
+        view.renderedByParentView = true;
+        view.render(renderOpts);
+        return view;
+    },
+    _getOrCreateByModel: function (model, renderOpts) {
+        return this._getViewByModel(model) || this._createViewForModel(model, renderOpts);
+    },
+    _addViewForModel: function (model, collection, options) {
+        var matches = this.filter ? this.filter(model) : true;
+        if (!matches) {
+            return;
+        }
+        if (this.renderedEmptyView) {
+            this.renderedEmptyView.remove();
+            delete this.renderedEmptyView;
+        }
+        var view = this._getOrCreateByModel(model, {containerEl: this.el});
+        if (options && options.rerender) {
+            this._insertView(view);
+        } else {
+            this._insertViewAtIndex(view);
+        }
+    },
+    _insertViewAtIndex: function (view) {
+        if (!view.insertSelf) {
+            var pos = this.collection.indexOf(view.model);
+            var modelToInsertBefore, viewToInsertBefore;
+
+            if (this.reverse) {
+                modelToInsertBefore = this.collection.at(pos - 1);
+            } else {
+                modelToInsertBefore = this.collection.at(pos + 1);
+            }
+
+            viewToInsertBefore = this._getViewByModel(modelToInsertBefore);
+
+            // FIX IE bug (https://developer.mozilla.org/en-US/docs/Web/API/Node.insertBefore)
+            // "In Internet Explorer an undefined value as referenceElement will throw errors, while in rest of the modern browsers, this works fine."
+            if(viewToInsertBefore) {
+                this.el.insertBefore(view.el, viewToInsertBefore && viewToInsertBefore.el);
+            } else {
+                this.el.appendChild(view.el);
+            }
+        }
+    },
+    _insertView: function (view) {
+        if (!view.insertSelf) {
+            if (this.reverse && this.el.firstChild) {
+                this.el.insertBefore(view.el, this.el.firstChild);
+            } else {
+                this.el.appendChild(view.el);
+            }
+        }
+    },
+    _removeViewForModel: function (model) {
+        var view = this._getViewByModel(model);
+        if (!view) {
+            return;
+        }
+        var index = this.views.indexOf(view);
+        if (index !== -1) {
+            // remove it if we found it calling animateRemove
+            // to give user option of gracefully destroying.
+            view = this.views.splice(index, 1)[0];
+            this._removeView(view);
+            if (this.views.length === 0) {
+                this._renderEmptyView();
+            }
+        }
+    },
+    _removeView: function (view) {
+        if (view.animateRemove) {
+            view.animateRemove();
+        } else {
+            view.remove();
+        }
+    },
+    _renderAll: function () {
+        this.collection.each(this._addViewForModel, this);
+        if (this.views.length === 0) {
+            this._renderEmptyView();
+        }
+    },
+    _rerenderAll: function (collection, options) {
+        options = options || {};
+        this.collection.each(function (model) {
+            this._addViewForModel(model, this, _.extend(options, {rerender: true}));
+        }, this);
+    },
+    _renderEmptyView: function() {
+        if (this.emptyView && !this.renderedEmptyView) {
+            var view = this.renderedEmptyView = new this.emptyView();
+            this.el.appendChild(view.render().el);
+        }
+    },
+    _reset: function () {
+        var newViews = this.collection.map(this._getOrCreateByModel, this);
+
+        //Remove existing views from the ui
+        var toRemove = _.difference(this.views, newViews);
+        toRemove.forEach(this._removeView, this);
+
+        //Rerender the full list with the new views
+        this.views = newViews;
+        this._rerenderAll();
+        if (this.views.length === 0) {
+            this._renderEmptyView();
+        }
+    }
+});
+
+CollectionView.extend = ampExtend;
+
+module.exports = CollectionView;
+
+},{"ampersand-class-extend":58,"backbone-events-standalone":61,"underscore":78}],58:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"dup":11,"extend-object":59}],59:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"dup":14}],60:[function(require,module,exports){
+/**
+ * Standalone extraction of Backbone.Events, no external dependency required.
+ * Degrades nicely when Backone/underscore are already available in the current
+ * global context.
+ *
+ * Note that docs suggest to use underscore's `_.extend()` method to add Events
+ * support to some given object. A `mixin()` method has been added to the Events
+ * prototype to avoid using underscore for that sole purpose:
+ *
+ *     var myEventEmitter = BackboneEvents.mixin({});
+ *
+ * Or for a function constructor:
+ *
+ *     function MyConstructor(){}
+ *     MyConstructor.prototype.foo = function(){}
+ *     BackboneEvents.mixin(MyConstructor.prototype);
+ *
+ * (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
+ * (c) 2013 Nicolas Perriault
+ */
+/* global exports:true, define, module */
+(function() {
+  var root = this,
+      nativeForEach = Array.prototype.forEach,
+      hasOwnProperty = Object.prototype.hasOwnProperty,
+      slice = Array.prototype.slice,
+      idCounter = 0;
+
+  // Returns a partial implementation matching the minimal API subset required
+  // by Backbone.Events
+  function miniscore() {
+    return {
+      keys: Object.keys || function (obj) {
+        if (typeof obj !== "object" && typeof obj !== "function" || obj === null) {
+          throw new TypeError("keys() called on a non-object");
+        }
+        var key, keys = [];
+        for (key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            keys[keys.length] = key;
+          }
+        }
+        return keys;
+      },
+
+      uniqueId: function(prefix) {
+        var id = ++idCounter + '';
+        return prefix ? prefix + id : id;
+      },
+
+      has: function(obj, key) {
+        return hasOwnProperty.call(obj, key);
+      },
+
+      each: function(obj, iterator, context) {
+        if (obj == null) return;
+        if (nativeForEach && obj.forEach === nativeForEach) {
+          obj.forEach(iterator, context);
+        } else if (obj.length === +obj.length) {
+          for (var i = 0, l = obj.length; i < l; i++) {
+            iterator.call(context, obj[i], i, obj);
+          }
+        } else {
+          for (var key in obj) {
+            if (this.has(obj, key)) {
+              iterator.call(context, obj[key], key, obj);
+            }
+          }
+        }
+      },
+
+      once: function(func) {
+        var ran = false, memo;
+        return function() {
+          if (ran) return memo;
+          ran = true;
+          memo = func.apply(this, arguments);
+          func = null;
+          return memo;
+        };
+      }
+    };
+  }
+
+  var _ = miniscore(), Events;
+
+  // Backbone.Events
+  // ---------------
+
+  // A module that can be mixed in to *any object* in order to provide it with
+  // custom events. You may bind with `on` or remove with `off` callback
+  // functions to an event; `trigger`-ing an event fires all callbacks in
+  // succession.
+  //
+  //     var object = {};
+  //     _.extend(object, Backbone.Events);
+  //     object.on('expand', function(){ alert('expanded'); });
+  //     object.trigger('expand');
+  //
+  Events = {
+
+    // Bind an event to a `callback` function. Passing `"all"` will bind
+    // the callback to all events fired.
+    on: function(name, callback, context) {
+      if (!eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
+      this._events || (this._events = {});
+      var events = this._events[name] || (this._events[name] = []);
+      events.push({callback: callback, context: context, ctx: context || this});
+      return this;
+    },
+
+    // Bind an event to only be triggered a single time. After the first time
+    // the callback is invoked, it will be removed.
+    once: function(name, callback, context) {
+      if (!eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
+      var self = this;
+      var once = _.once(function() {
+        self.off(name, once);
+        callback.apply(this, arguments);
+      });
+      once._callback = callback;
+      return this.on(name, once, context);
+    },
+
+    // Remove one or many callbacks. If `context` is null, removes all
+    // callbacks with that function. If `callback` is null, removes all
+    // callbacks for the event. If `name` is null, removes all bound
+    // callbacks for all events.
+    off: function(name, callback, context) {
+      var retain, ev, events, names, i, l, j, k;
+      if (!this._events || !eventsApi(this, 'off', name, [callback, context])) return this;
+      if (!name && !callback && !context) {
+        this._events = {};
+        return this;
+      }
+
+      names = name ? [name] : _.keys(this._events);
+      for (i = 0, l = names.length; i < l; i++) {
+        name = names[i];
+        if (events = this._events[name]) {
+          this._events[name] = retain = [];
+          if (callback || context) {
+            for (j = 0, k = events.length; j < k; j++) {
+              ev = events[j];
+              if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
+                  (context && context !== ev.context)) {
+                retain.push(ev);
+              }
+            }
+          }
+          if (!retain.length) delete this._events[name];
+        }
+      }
+
+      return this;
+    },
+
+    // Trigger one or many events, firing all bound callbacks. Callbacks are
+    // passed the same arguments as `trigger` is, apart from the event name
+    // (unless you're listening on `"all"`, which will cause your callback to
+    // receive the true name of the event as the first argument).
+    trigger: function(name) {
+      if (!this._events) return this;
+      var args = slice.call(arguments, 1);
+      if (!eventsApi(this, 'trigger', name, args)) return this;
+      var events = this._events[name];
+      var allEvents = this._events.all;
+      if (events) triggerEvents(events, args);
+      if (allEvents) triggerEvents(allEvents, arguments);
+      return this;
+    },
+
+    // Tell this object to stop listening to either specific events ... or
+    // to every object it's currently listening to.
+    stopListening: function(obj, name, callback) {
+      var listeners = this._listeners;
+      if (!listeners) return this;
+      var deleteListener = !name && !callback;
+      if (typeof name === 'object') callback = this;
+      if (obj) (listeners = {})[obj._listenerId] = obj;
+      for (var id in listeners) {
+        listeners[id].off(name, callback, this);
+        if (deleteListener) delete this._listeners[id];
+      }
+      return this;
+    }
+
+  };
+
+  // Regular expression used to split event strings.
+  var eventSplitter = /\s+/;
+
+  // Implement fancy features of the Events API such as multiple event
+  // names `"change blur"` and jQuery-style event maps `{change: action}`
+  // in terms of the existing API.
+  var eventsApi = function(obj, action, name, rest) {
+    if (!name) return true;
+
+    // Handle event maps.
+    if (typeof name === 'object') {
+      for (var key in name) {
+        obj[action].apply(obj, [key, name[key]].concat(rest));
+      }
+      return false;
+    }
+
+    // Handle space separated event names.
+    if (eventSplitter.test(name)) {
+      var names = name.split(eventSplitter);
+      for (var i = 0, l = names.length; i < l; i++) {
+        obj[action].apply(obj, [names[i]].concat(rest));
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  // A difficult-to-believe, but optimized internal dispatch function for
+  // triggering events. Tries to keep the usual cases speedy (most internal
+  // Backbone events have 3 arguments).
+  var triggerEvents = function(events, args) {
+    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
+    switch (args.length) {
+      case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
+      case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
+      case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
+      case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
+      default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args);
+    }
+  };
+
+  var listenMethods = {listenTo: 'on', listenToOnce: 'once'};
+
+  // Inversion-of-control versions of `on` and `once`. Tell *this* object to
+  // listen to an event in another object ... keeping track of what it's
+  // listening to.
+  _.each(listenMethods, function(implementation, method) {
+    Events[method] = function(obj, name, callback) {
+      var listeners = this._listeners || (this._listeners = {});
+      var id = obj._listenerId || (obj._listenerId = _.uniqueId('l'));
+      listeners[id] = obj;
+      if (typeof name === 'object') callback = this;
+      obj[implementation](name, callback, this);
+      return this;
+    };
+  });
+
+  // Aliases for backwards compatibility.
+  Events.bind   = Events.on;
+  Events.unbind = Events.off;
+
+  // Mixin utility
+  Events.mixin = function(proto) {
+    var exports = ['on', 'once', 'off', 'trigger', 'stopListening', 'listenTo',
+                   'listenToOnce', 'bind', 'unbind'];
+    _.each(exports, function(name) {
+      proto[name] = this[name];
+    }, this);
+    return proto;
+  };
+
+  // Export Events as BackboneEvents depending on current context
+  if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = Events;
+    }
+    exports.BackboneEvents = Events;
+  }else if (typeof define === "function") {
+    define(function() {
+      return Events;
+    });
+  } else {
+    root.BackboneEvents = Events;
+  }
+})(this);
+
+},{}],61:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"./backbone-events-standalone":60,"dup":13}],62:[function(require,module,exports){
+;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-dom-bindings"] = window.ampersand["ampersand-dom-bindings"] || [];  window.ampersand["ampersand-dom-bindings"].push("3.3.3");}
+var Store = require('key-tree-store');
+var dom = require('ampersand-dom');
+var matchesSelector = require('matches-selector');
+
+
+// returns a key-tree-store of functions
+// that can be applied to any element/model.
+
+// all resulting functions should be called
+// like func(el, value, lastKeyName)
+module.exports = function (bindings, context) {
+    var store = new Store();
+    var key, current;
+
+    for (key in bindings) {
+        current = bindings[key];
+        if (typeof current === 'string') {
+            store.add(key, getBindingFunc({
+                type: 'text',
+                selector: current
+            }));
+        } else if (current.forEach) {
+            current.forEach(function (binding) {
+                store.add(key, getBindingFunc(binding, context));
+            });
+        } else {
+            store.add(key, getBindingFunc(current, context));
+        }
+    }
+
+    return store;
+};
+
+
+var slice = Array.prototype.slice;
+
+function getMatches(el, selector) {
+    if (selector === '') return [el];
+    var matches = [];
+    if (matchesSelector(el, selector)) matches.push(el);
+    return matches.concat(slice.call(el.querySelectorAll(selector)));
+}
+
+function makeArray(val) {
+    return Array.isArray(val) ? val : [val];
+}
+
+function getBindingFunc(binding, context) {
+    var type = binding.type || 'text';
+    var isCustomBinding = typeof type === 'function';
+    var selector = (function () {
+        if (typeof binding.selector === 'string') {
+            return binding.selector;
+        } else if (binding.hook) {
+            return '[data-hook~="' + binding.hook + '"]';
+        } else {
+            return '';
+        }
+    })();
+    var yes = binding.yes;
+    var no = binding.no;
+    var hasYesNo = !!(yes || no);
+
+    // storage variable for previous if relevant
+    var previousValue;
+
+    if (isCustomBinding) {
+        return function (el, value) {
+            getMatches(el, selector).forEach(function (match) {
+                type.call(context, match, value, previousValue);
+            });
+            previousValue = value;
+        };
+    } else if (type === 'text') {
+        return function (el, value) {
+            getMatches(el, selector).forEach(function (match) {
+                dom.text(match, value);
+            });
+        };
+    } else if (type === 'class') {
+        return function (el, value) {
+            getMatches(el, selector).forEach(function (match) {
+                dom.switchClass(match, previousValue, value);
+            });
+            previousValue = value;
+        };
+    } else if (type === 'attribute') {
+        if (!binding.name) throw Error('attribute bindings must have a "name"');
+        return function (el, value) {
+            var names = makeArray(binding.name);
+            getMatches(el, selector).forEach(function (match) {
+                names.forEach(function (name) {
+                    dom.setAttribute(match, name, value);
+                });
+            });
+            previousValue = value;
+        };
+    } else if (type === 'value') {
+        return function (el, value) {
+            getMatches(el, selector).forEach(function (match) {
+                if (!value && value !== 0) value = '';
+                // only apply bindings if element is not currently focused
+                if (document.activeElement !== match) match.value = value;
+            });
+            previousValue = value;
+        };
+    } else if (type === 'booleanClass') {
+        // if there's a `no` case this is actually a switch
+        if (hasYesNo) {
+            yes = makeArray(yes || '');
+            no = makeArray(no || '');
+            return function (el, value) {
+                var prevClass = value ? no : yes;
+                var newClass = value ? yes : no;
+                getMatches(el, selector).forEach(function (match) {
+                    prevClass.forEach(function (pc) {
+                        dom.removeClass(match, pc);
+                    });
+                    newClass.forEach(function (nc) {
+                        dom.addClass(match, nc);
+                    });
+                });
+            };
+        } else {
+            return function (el, value, keyName) {
+                var name = makeArray(binding.name || keyName);
+                getMatches(el, selector).forEach(function (match) {
+                    name.forEach(function (className) {
+                        dom[value ? 'addClass' : 'removeClass'](match, className);
+                    });
+                });
+            };
+        }
+    } else if (type === 'booleanAttribute') {
+        return function (el, value, keyName) {
+            var name = makeArray(binding.name || keyName);
+            getMatches(el, selector).forEach(function (match) {
+                name.forEach(function (attr) {
+                    dom[value ? 'addAttribute' : 'removeAttribute'](match, attr);
+                });
+            });
+        };
+    } else if (type === 'toggle') {
+        // this doesn't require a selector since we can pass yes/no selectors
+        if (hasYesNo) {
+            return function (el, value) {
+                getMatches(el, yes).forEach(function (match) {
+                    dom[value ? 'show' : 'hide'](match);
+                });
+                getMatches(el, no).forEach(function (match) {
+                    dom[value ? 'hide' : 'show'](match);
+                });
+            };
+        } else {
+            return function (el, value) {
+                getMatches(el, selector).forEach(function (match) {
+                    dom[value ? 'show' : 'hide'](match);
+                });
+            };
+        }
+    } else if (type === 'switch') {
+        if (!binding.cases) throw Error('switch bindings must have "cases"');
+        return function (el, value) {
+            for (var item in binding.cases) {
+                getMatches(el, binding.cases[item]).forEach(function (match) {
+                    dom[value === item ? 'show' : 'hide'](match);
+                });
+            }
+        };
+    } else if (type === 'innerHTML') {
+        return function (el, value) {
+            getMatches(el, selector).forEach(function (match) {
+                dom.html(match, value);
+            });
+        };
+    } else if (type === 'switchClass') {
+        if (!binding.cases) throw Error('switchClass bindings must have "cases"');
+        return function (el, value, keyName) {
+            var name = makeArray(binding.name || keyName);
+            for (var item in binding.cases) {
+                getMatches(el, binding.cases[item]).forEach(function (match) {
+                    name.forEach(function (className) {
+                        dom[value === item ? 'addClass' : 'removeClass'](match, className);
+                    });
+                });
+            }
+        };
+    } else {
+        throw new Error('no such binding type: ' + type);
+    }
+}
+
+},{"ampersand-dom":63,"key-tree-store":64,"matches-selector":77}],63:[function(require,module,exports){
+;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-dom"] = window.ampersand["ampersand-dom"] || [];  window.ampersand["ampersand-dom"].push("1.2.7");}
+var dom = module.exports = {
+    text: function (el, val) {
+        el.textContent = getString(val);
+    },
+    // optimize if we have classList
+    addClass: function (el, cls) {
+        cls = getString(cls);
+        if (!cls) return;
+        if (Array.isArray(cls)) {
+            cls.forEach(function(c) {
+                dom.addClass(el, c);
+            });
+        } else if (el.classList) {
+            el.classList.add(cls);
+        } else {
+            if (!hasClass(el, cls)) {
+                if (el.classList) {
+                    el.classList.add(cls);
+                } else {
+                    el.className += ' ' + cls;
+                }
+            }
+        }
+    },
+    removeClass: function (el, cls) {
+        if (Array.isArray(cls)) {
+            cls.forEach(function(c) {
+                dom.removeClass(el, c);
+            });
+        } else if (el.classList) {
+            cls = getString(cls);
+            if (cls) el.classList.remove(cls);
+        } else {
+            // may be faster to not edit unless we know we have it?
+            el.className = el.className.replace(new RegExp('(^|\\b)' + cls.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+        }
+    },
+    hasClass: hasClass,
+    switchClass: function (el, prevCls, newCls) {
+        if (prevCls) this.removeClass(el, prevCls);
+        this.addClass(el, newCls);
+    },
+    // makes sure attribute (with no content) is added
+    // if exists it will be cleared of content
+    addAttribute: function (el, attr) {
+        // setting to empty string does same
+        el.setAttribute(attr, '');
+        // Some browsers won't update UI for boolean attributes unless you
+        // set it directly. So we do both
+        if (hasBooleanProperty(el, attr)) el[attr] = true;
+    },
+    // completely removes attribute
+    removeAttribute: function (el, attr) {
+        el.removeAttribute(attr);
+        if (hasBooleanProperty(el, attr)) el[attr] = false;
+    },
+    // sets attribute to string value given, clearing any current value
+    setAttribute: function (el, attr, value) {
+        el.setAttribute(attr, getString(value));
+    },
+    getAttribute: function (el, attr) {
+        return el.getAttribute(attr);
+    },
+    hide: function (el) {
+        if (!isHidden(el)) {
+            storeDisplayStyle(el);
+            hide(el);
+        }
+    },
+    // show element
+    show: function (el) {
+        show(el);
+    },
+    html: function (el, content) {
+        el.innerHTML = content;
+    }
+};
+
+// helpers
+function getString(val) {
+    if (!val && val !== 0) {
+        return '';
+    } else {
+        return val;
+    }
+}
+
+function hasClass(el, cls) {
+    if (el.classList) {
+        return el.classList.contains(cls);
+    } else {
+        return new RegExp('(^| )' + cls + '( |$)', 'gi').test(el.className);
+    }
+}
+
+function hasBooleanProperty(el, prop) {
+    var val = el[prop];
+    return prop in el && (val === true || val === false);
+}
+
+function isHidden (el) {
+    return dom.getAttribute(el, 'data-anddom-hidden') === 'true';
+}
+
+function storeDisplayStyle (el) {
+    dom.setAttribute(el, 'data-anddom-display', el.style.display);
+}
+
+function show (el) {
+    el.style.display = dom.getAttribute(el, 'data-anddom-display') || '';
+    dom.removeAttribute(el, 'data-anddom-hidden');
+}
+
+function hide (el) {
+    dom.setAttribute(el, 'data-anddom-hidden', 'true');
+    el.style.display = 'none';
+}
+
+},{}],64:[function(require,module,exports){
+var slice = Array.prototype.slice;
+
+// our constructor
+function KeyTreeStore() {
+    this.storage = {};
+}
+
+// add an object to the store
+KeyTreeStore.prototype.add = function (keypath, obj) {
+    var arr = this.storage[keypath] || (this.storage[keypath] = []);
+    arr.push(obj);
+};
+
+// remove an object
+KeyTreeStore.prototype.remove = function (obj) {
+    var path, arr;
+    for (path in this.storage) {
+        arr = this.storage[path];
+        arr.some(function (item, index) {
+            if (item === obj) {
+                arr.splice(index, 1);
+                return true;
+            }
+        });
+    }
+};
+
+// get array of all all relevant functions, without keys
+KeyTreeStore.prototype.get = function (keypath) {
+    var res = [];
+    var key;
+
+    for (key in this.storage) {
+        if (!keypath || keypath === key || key.indexOf(keypath + '.') === 0) {
+            res = res.concat(this.storage[key]);
+        }
+    }
+
+    return res;
+};
+
+// get all results that match keypath but still grouped by key
+KeyTreeStore.prototype.getGrouped = function (keypath) {
+    var res = {};
+    var key;
+
+    for (key in this.storage) {
+        if (!keypath || keypath === key || key.indexOf(keypath + '.') === 0) {
+            res[key] = slice.call(this.storage[key]);
+        }
+    }
+
+    return res;
+};
+
+// get all results that match keypath but still grouped by key
+KeyTreeStore.prototype.getAll = function (keypath) {
+    var res = {};
+    var key;
+
+    for (key in this.storage) {
+        if (keypath === key || key.indexOf(keypath + '.') === 0) {
+            res[key] = slice.call(this.storage[key]);
+        }
+    }
+
+    return res;
+};
+
+// run all matches with optional context
+KeyTreeStore.prototype.run = function (keypath, context) {
+    var args = slice.call(arguments, 2);
+    this.get(keypath).forEach(function (fn) {
+        fn.apply(context || this, args);
+    });
+};
+
+
+
+module.exports = KeyTreeStore;
+
+},{}],65:[function(require,module,exports){
+;if (typeof window !== "undefined") {  window.ampersand = window.ampersand || {};  window.ampersand["ampersand-state"] = window.ampersand["ampersand-state"] || [];  window.ampersand["ampersand-state"].push("4.4.5");}
+var _ = require('underscore');
+var BBEvents = require('backbone-events-standalone');
+var KeyTree = require('key-tree-store');
+var arrayNext = require('array-next');
+var changeRE = /^change:/;
+
+function Base(attrs, options) {
+    options || (options = {});
+    this.cid || (this.cid = _.uniqueId('state'));
+    this._events = {};
+    this._values = {};
+    this._definition = Object.create(this._definition);
+    if (options.parse) attrs = this.parse(attrs, options);
+    this.parent = options.parent;
+    this.collection = options.collection;
+    this._keyTree = new KeyTree();
+    this._initCollections();
+    this._initChildren();
+    this._cache = {};
+    this._previousAttributes = {};
+    if (attrs) this.set(attrs, _.extend({silent: true, initial: true}, options));
+    this._changed = {};
+    if (this._derived) this._initDerived();
+    if (options.init !== false) this.initialize.apply(this, arguments);
+}
+
+
+_.extend(Base.prototype, BBEvents, {
+    // can be allow, ignore, reject
+    extraProperties: 'ignore',
+
+    idAttribute: 'id',
+
+    namespaceAttribute: 'namespace',
+
+    typeAttribute: 'modelType',
+
+    // Stubbed out to be overwritten
+    initialize: function () {
+        return this;
+    },
+
+    // Get ID of model per configuration.
+    // Should *always* be how ID is determined by other code.
+    getId: function () {
+        return this[this.idAttribute];
+    },
+
+    // Get namespace of model per configuration.
+    // Should *always* be how namespace is determined by other code.
+    getNamespace: function () {
+        return this[this.namespaceAttribute];
+    },
+
+    // Get type of model per configuration.
+    // Should *always* be how type is determined by other code.
+    getType: function () {
+        return this[this.typeAttribute];
+    },
+
+    // A model is new if it has never been saved to the server, and lacks an id.
+    isNew: function () {
+        return this.getId() == null;
+    },
+
+    // get HTML-escaped value of attribute
+    escape: function (attr) {
+        return _.escape(this.get(attr));
+    },
+
+    // Check if the model is currently in a valid state.
+    isValid: function (options) {
+        return this._validate({}, _.extend(options || {}, { validate: true }));
+    },
+
+    // Parse can be used remap/restructure/rename incoming properties
+    // before they are applied to attributes.
+    parse: function (resp, options) {
+        return resp;
+    },
+
+    // Serialize is the inverse of `parse` it lets you massage data
+    // on the way out. Before, sending to server, for example.
+    serialize: function () {
+        var res = this.getAttributes({props: true}, true);
+        _.each(this._children, function (value, key) {
+            res[key] = this[key].serialize();
+        }, this);
+        _.each(this._collections, function (value, key) {
+            res[key] = this[key].serialize();
+        }, this);
+        return res;
+    },
+
+    // Main set method used by generated setters/getters and can
+    // be used directly if you need to pass options or set multiple
+    // properties at once.
+    set: function (key, value, options) {
+        var self = this;
+        var extraProperties = this.extraProperties;
+        var triggers = [];
+        var changing, changes, newType, newVal, def, cast, err, attr,
+            attrs, dataType, silent, unset, currentVal, initial, hasChanged, isEqual;
+
+        // Handle both `"key", value` and `{key: value}` -style arguments.
+        if (_.isObject(key) || key === null) {
+            attrs = key;
+            options = value;
+        } else {
+            attrs = {};
+            attrs[key] = value;
+        }
+
+        options = options || {};
+
+        if (!this._validate(attrs, options)) return false;
+
+        // Extract attributes and options.
+        unset = options.unset;
+        silent = options.silent;
+        initial = options.initial;
+
+        changes = [];
+        changing = this._changing;
+        this._changing = true;
+
+        // if not already changing, store previous
+        if (!changing) {
+            this._previousAttributes = this.attributes;
+            this._changed = {};
+        }
+
+        // For each `set` attribute...
+        for (attr in attrs) {
+            newVal = attrs[attr];
+            newType = typeof newVal;
+            currentVal = this._values[attr];
+            def = this._definition[attr];
+
+
+            if (!def) {
+                // if this is a child model or collection
+                if (this._children[attr] || this._collections[attr]) {
+                    this[attr].set(newVal, options);
+                    continue;
+                } else if (extraProperties === 'ignore') {
+                    continue;
+                } else if (extraProperties === 'reject') {
+                    throw new TypeError('No "' + attr + '" property defined on ' + (this.type || 'this') + ' model and extraProperties not set to "ignore" or "allow"');
+                } else if (extraProperties === 'allow') {
+                    def = this._createPropertyDefinition(attr, 'any');
+                } else if (extraProperties) {
+                    throw new TypeError('Invalid value for extraProperties: "' + extraProperties + '"');
+                }
+            }
+
+            isEqual = this._getCompareForType(def.type);
+            dataType = this._dataTypes[def.type];
+
+            // check type if we have one
+            if (dataType && dataType.set) {
+                cast = dataType.set(newVal);
+                newVal = cast.val;
+                newType = cast.type;
+            }
+
+            // If we've defined a test, run it
+            if (def.test) {
+                err = def.test.call(this, newVal, newType);
+                if (err) {
+                    throw new TypeError('Property \'' + attr + '\' failed validation with error: ' + err);
+                }
+            }
+
+            // If we are required but undefined, throw error.
+            // If we are null and are not allowing null, throw error
+            // If we have a defined type and the new type doesn't match, and we are not null, throw error.
+
+            if (_.isUndefined(newVal) && def.required) {
+                throw new TypeError('Required property \'' + attr + '\' must be of type ' + def.type + '. Tried to set ' + newVal);
+            }
+            if (_.isNull(newVal) && def.required && !def.allowNull) {
+                throw new TypeError('Property \'' + attr + '\' must be of type ' + def.type + ' (cannot be null). Tried to set ' + newVal);
+            }
+            if ((def.type && def.type !== 'any' && def.type !== newType) && !_.isNull(newVal) && !_.isUndefined(newVal)) {
+                throw new TypeError('Property \'' + attr + '\' must be of type ' + def.type + '. Tried to set ' + newVal);
+            }
+            if (def.values && !_.contains(def.values, newVal)) {
+                throw new TypeError('Property \'' + attr + '\' must be one of values: ' + def.values.join(', ') + '. Tried to set ' + newVal);
+            }
+
+            hasChanged = !isEqual(currentVal, newVal, attr);
+
+            // enforce `setOnce` for properties if set
+            if (def.setOnce && currentVal !== undefined && hasChanged && !initial) {
+                throw new TypeError('Property \'' + attr + '\' can only be set once.');
+            }
+
+            // keep track of changed attributes
+            // and push to changes array
+            if (hasChanged) {
+                changes.push({prev: currentVal, val: newVal, key: attr});
+                self._changed[attr] = newVal;
+            } else {
+                delete self._changed[attr];
+            }
+        }
+
+        // actually update our values
+        _.each(changes, function (change) {
+            self._previousAttributes[change.key] = change.prev;
+            if (unset) {
+                delete self._values[change.key];
+            } else {
+                self._values[change.key] = change.val;
+            }
+        });
+
+        if (!silent && changes.length) self._pending = true;
+        if (!silent) {
+            _.each(changes, function (change) {
+                self.trigger('change:' + change.key, self, change.val, options);
+            });
+        }
+
+        // You might be wondering why there's a `while` loop here. Changes can
+        // be recursively nested within `"change"` events.
+        if (changing) return this;
+        if (!silent) {
+            while (this._pending) {
+                this._pending = false;
+                this.trigger('change', this, options);
+            }
+        }
+        this._pending = false;
+        this._changing = false;
+        return this;
+    },
+
+    get: function (attr) {
+        return this[attr];
+    },
+
+    // Toggle boolean properties or properties that have a `values`
+    // array in its definition.
+    toggle: function (property) {
+        var def = this._definition[property];
+        if (def.type === 'boolean') {
+            // if it's a bool, just flip it
+            this[property] = !this[property];
+        } else if (def && def.values) {
+            // If it's a property with an array of values
+            // skip to the next one looping back if at end.
+            this[property] = arrayNext(def.values, this[property]);
+        } else {
+            throw new TypeError('Can only toggle properties that are type `boolean` or have `values` array.');
+        }
+        return this;
+    },
+
+    // Get all of the attributes of the model at the time of the previous
+    // `"change"` event.
+    previousAttributes: function () {
+        return _.clone(this._previousAttributes);
+    },
+
+    // Determine if the model has changed since the last `"change"` event.
+    // If you specify an attribute name, determine if that attribute has changed.
+    hasChanged: function (attr) {
+        if (attr == null) return !_.isEmpty(this._changed);
+        return _.has(this._changed, attr);
+    },
+
+    // Return an object containing all the attributes that have changed, or
+    // false if there are no changed attributes. Useful for determining what
+    // parts of a view need to be updated and/or what attributes need to be
+    // persisted to the server. Unset attributes will be set to undefined.
+    // You can also pass an attributes object to diff against the model,
+    // determining if there *would be* a change.
+    changedAttributes: function (diff) {
+        if (!diff) return this.hasChanged() ? _.clone(this._changed) : false;
+        var val, changed = false;
+        var old = this._changing ? this._previousAttributes : this.attributes;
+        var def, isEqual;
+        for (var attr in diff) {
+            def = this._definition[attr];
+            if (!def) continue;
+            isEqual = this._getCompareForType(def.type);
+            if (isEqual(old[attr], (val = diff[attr]))) continue;
+            (changed || (changed = {}))[attr] = val;
+        }
+        return changed;
+    },
+
+    toJSON: function () {
+        return this.serialize();
+    },
+
+    unset: function (attr, options) {
+        var def = this._definition[attr];
+        var type = def.type;
+        var val;
+        if (def.required) {
+            val = _.result(def, 'default');
+            return this.set(attr, val, options);
+        } else {
+            return this.set(attr, val, _.extend({}, options, {unset: true}));
+        }
+    },
+
+    clear: function (options) {
+        var self = this;
+        _.each(_.keys(this.attributes), function (key) {
+            self.unset(key, options);
+        });
+        return this;
+    },
+
+    previous: function (attr) {
+        if (attr == null || !Object.keys(this._previousAttributes).length) return null;
+        return this._previousAttributes[attr];
+    },
+
+    // Get default values for a certain type
+    _getDefaultForType: function (type) {
+        var dataType = this._dataTypes[type];
+        return dataType && dataType.default;
+    },
+
+    // Determine which comparison algorithm to use for comparing a property
+    _getCompareForType: function (type) {
+        var dataType = this._dataTypes[type];
+        if (dataType && dataType.compare) return _.bind(dataType.compare, this);
+        return _.isEqual;
+    },
+
+    // Run validation against the next complete set of model attributes,
+    // returning `true` if all is well. Otherwise, fire an `"invalid"` event.
+    _validate: function (attrs, options) {
+        if (!options.validate || !this.validate) return true;
+        attrs = _.extend({}, this.attributes, attrs);
+        var error = this.validationError = this.validate(attrs, options) || null;
+        if (!error) return true;
+        this.trigger('invalid', this, error, _.extend(options || {}, {validationError: error}));
+        return false;
+    },
+
+    _createPropertyDefinition: function (name, desc, isSession) {
+        return createPropertyDefinition(this, name, desc, isSession);
+    },
+
+    // just makes friendlier errors when trying to define a new model
+    // only used when setting up original property definitions
+    _ensureValidType: function (type) {
+        return _.contains(['string', 'number', 'boolean', 'array', 'object', 'date', 'any'].concat(_.keys(this._dataTypes)), type) ? type : undefined;
+    },
+
+    getAttributes: function (options, raw) {
+        options || (options = {});
+        _.defaults(options, {
+            session: false,
+            props: false,
+            derived: false
+        });
+        var res = {};
+        var val, item, def;
+        for (item in this._definition) {
+            def = this._definition[item];
+            if ((options.session && def.session) || (options.props && !def.session)) {
+                val = (raw) ? this._values[item] : this[item];
+                if (typeof val === 'undefined') val = _.result(def, 'default');
+                if (typeof val !== 'undefined') res[item] = val;
+            }
+        }
+        if (options.derived) {
+            for (item in this._derived) res[item] = this[item];
+        }
+        return res;
+    },
+
+    _initDerived: function () {
+        var self = this;
+
+        _.each(this._derived, function (value, name) {
+            var def = self._derived[name];
+            def.deps = def.depList;
+
+            var update = function (options) {
+                options = options || {};
+
+                var newVal = def.fn.call(self);
+
+                if (self._cache[name] !== newVal || !def.cache) {
+                    if (def.cache) {
+                        self._previousAttributes[name] = self._cache[name];
+                    }
+                    self._cache[name] = newVal;
+                    self.trigger('change:' + name, self, self._cache[name]);
+                }
+            };
+
+            def.deps.forEach(function (propString) {
+                self._keyTree.add(propString, update);
+            });
+        });
+
+        this.on('all', function (eventName) {
+            if (changeRE.test(eventName)) {
+                self._keyTree.get(eventName.split(':')[1]).forEach(function (fn) {
+                    fn();
+                });
+            }
+        }, this);
+    },
+
+    _getDerivedProperty: function (name, flushCache) {
+        // is this a derived property that is cached
+        if (this._derived[name].cache) {
+            //set if this is the first time, or flushCache is set
+            if (flushCache || !this._cache.hasOwnProperty(name)) {
+                this._cache[name] = this._derived[name].fn.apply(this);
+            }
+            return this._cache[name];
+        } else {
+            return this._derived[name].fn.apply(this);
+        }
+    },
+
+    _initCollections: function () {
+        var coll;
+        if (!this._collections) return;
+        for (coll in this._collections) {
+            this[coll] = new this._collections[coll](null, {parent: this});
+        }
+    },
+
+    _initChildren: function () {
+        var child;
+        if (!this._children) return;
+        for (child in this._children) {
+            this[child] = new this._children[child]({}, {parent: this});
+            this.listenTo(this[child], 'all', this._getEventBubblingHandler(child));
+        }
+    },
+
+    // Returns a bound handler for doing event bubbling while
+    // adding a name to the change string.
+    _getEventBubblingHandler: function (propertyName) {
+        return _.bind(function (name, model, newValue) {
+            if (changeRE.test(name)) {
+                this.trigger('change:' + propertyName + '.' + name.split(':')[1], model, newValue);
+            } else if (name === 'change') {
+                this.trigger('change', this);
+            }
+        }, this);
+    },
+
+    // Check that all required attributes are present
+    _verifyRequired: function () {
+        var attrs = this.attributes; // should include session
+        for (var def in this._definition) {
+            if (this._definition[def].required && typeof attrs[def] === 'undefined') {
+                return false;
+            }
+        }
+        return true;
+    }
+});
+
+// getter for attributes
+Object.defineProperties(Base.prototype, {
+    attributes: {
+        get: function () {
+            return this.getAttributes({props: true, session: true});
+        }
+    },
+    all: {
+        get: function () {
+            return this.getAttributes({
+                session: true,
+                props: true,
+                derived: true
+            });
+        }
+    },
+    isState: {
+        get: function () { return true; },
+        set: function () { }
+    }
+});
+
+// helper for creating/storing property definitions and creating
+// appropriate getters/setters
+function createPropertyDefinition(object, name, desc, isSession) {
+    var def = object._definition[name] = {};
+    var type, descArray;
+
+    if (_.isString(desc)) {
+        // grab our type if all we've got is a string
+        type = object._ensureValidType(desc);
+        if (type) def.type = type;
+    } else {
+
+        //Transform array of ['type', required, default] to object form
+        if (_.isArray(desc)) {
+            descArray = desc;
+            desc = {
+                type: descArray[0],
+                required: descArray[1],
+                default: descArray[2]
+            };
+        }
+
+        type = object._ensureValidType(desc.type);
+        if (type) def.type = type;
+
+        if (desc.required) def.required = true;
+
+        if (desc.default && typeof desc.default === 'object') {
+            throw new TypeError('The default value for ' + name + ' cannot be an object/array, must be a value or a function which returns a value/object/array');
+        }
+        def.default = desc.default;
+
+        def.allowNull = desc.allowNull ? desc.allowNull : false;
+        if (desc.setOnce) def.setOnce = true;
+        if (def.required && _.isUndefined(def.default) && !def.setOnce) def.default = object._getDefaultForType(type);
+        def.test = desc.test;
+        def.values = desc.values;
+    }
+    if (isSession) def.session = true;
+
+    // define a getter/setter on the prototype
+    // but they get/set on the instance
+    Object.defineProperty(object, name, {
+        set: function (val) {
+            this.set(name, val);
+        },
+        get: function () {
+            var result = this._values[name];
+            var typeDef = this._dataTypes[def.type];
+            if (typeof result !== 'undefined') {
+                if (typeDef && typeDef.get) {
+                    result = typeDef.get(result);
+                }
+                return result;
+            }
+            result = _.result(def, 'default');
+            this._values[name] = result;
+            return result;
+        }
+    });
+
+    return def;
+}
+
+// helper for creating derived property definitions
+function createDerivedProperty(modelProto, name, definition) {
+    var def = modelProto._derived[name] = {
+        fn: _.isFunction(definition) ? definition : definition.fn,
+        cache: (definition.cache !== false),
+        depList: definition.deps || []
+    };
+
+    // add to our shared dependency list
+    _.each(def.depList, function (dep) {
+        modelProto._deps[dep] = _(modelProto._deps[dep] || []).union([name]);
+    });
+
+    // defined a top-level getter for derived names
+    Object.defineProperty(modelProto, name, {
+        get: function () {
+            return this._getDerivedProperty(name);
+        },
+        set: function () {
+            throw new TypeError('"' + name + '" is a derived property, it can\'t be set directly.');
+        }
+    });
+}
+
+var dataTypes = {
+    string: {
+        default: function () {
+            return '';
+        }
+    },
+    date: {
+        set: function (newVal) {
+            var newType;
+            if (newVal == null) {
+                newType = typeof null;
+            } else if (!_.isDate(newVal)) {
+                try {
+                    var dateVal = new Date(newVal).valueOf();
+                    if (isNaN(dateVal)) {
+                        // If the newVal cant be parsed, then try parseInt first
+                        dateVal = new Date(parseInt(newVal, 10)).valueOf();
+                        if (isNaN(dateVal)) throw TypeError;
+                    }
+                    newVal = dateVal;
+                    newType = 'date';
+                } catch (e) {
+                    newType = typeof newVal;
+                }
+            } else {
+                newType = 'date';
+                newVal = newVal.valueOf();
+            }
+
+            return {
+                val: newVal,
+                type: newType
+            };
+        },
+        get: function (val) {
+            if (val == null) { return val; }
+            return new Date(val);
+        },
+        default: function () {
+            return new Date();
+        }
+    },
+    array: {
+        set: function (newVal) {
+            return {
+                val: newVal,
+                type: _.isArray(newVal) ? 'array' : typeof newVal
+            };
+        },
+        default: function () {
+            return [];
+        }
+    },
+    object: {
+        set: function (newVal) {
+            var newType = typeof newVal;
+            // we have to have a way of supporting "missing" objects.
+            // Null is an object, but setting a value to undefined
+            // should work too, IMO. We just override it, in that case.
+            if (newType !== 'object' && _.isUndefined(newVal)) {
+                newVal = null;
+                newType = 'object';
+            }
+            return {
+                val: newVal,
+                type: newType
+            };
+        },
+        default: function () {
+            return {};
+        }
+    },
+    // the `state` data type is a bit special in that setting it should
+    // also bubble events
+    state: {
+        set: function (newVal) {
+            var isInstance = newVal instanceof Base || (newVal && newVal.isState);
+            if (isInstance) {
+                return {
+                    val: newVal,
+                    type: 'state'
+                };
+            } else {
+                return {
+                    val: newVal,
+                    type: typeof newVal
+                };
+            }
+        },
+        compare: function (currentVal, newVal, attributeName) {
+            var isSame = currentVal === newVal;
+
+            // if this has changed we want to also handle
+            // event propagation
+            if (!isSame) {
+                if (currentVal) {
+                    this.stopListening(currentVal);
+                }
+
+                if (newVal != null) {
+                    this.listenTo(newVal, 'all', this._getEventBubblingHandler(attributeName));
+                }
+            }
+
+            return isSame;
+        }
+    }
+};
+
+// the extend method used to extend prototypes, maintain inheritance chains for instanceof
+// and allow for additions to the model definitions.
+function extend(protoProps) {
+    var parent = this;
+    var child;
+    var args = [].slice.call(arguments);
+    var prop, item;
+
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent's constructor.
+    if (protoProps && protoProps.hasOwnProperty('constructor')) {
+        child = protoProps.constructor;
+    } else {
+        child = function () {
+            return parent.apply(this, arguments);
+        };
+    }
+
+    // Add static properties to the constructor function from parent
+    _.extend(child, parent);
+
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    var Surrogate = function () { this.constructor = child; };
+    Surrogate.prototype = parent.prototype;
+    child.prototype = new Surrogate();
+
+    // set prototype level objects
+    child.prototype._derived =  _.extend({}, parent.prototype._derived);
+    child.prototype._deps = _.extend({}, parent.prototype._deps);
+    child.prototype._definition = _.extend({}, parent.prototype._definition);
+    child.prototype._collections = _.extend({}, parent.prototype._collections);
+    child.prototype._children = _.extend({}, parent.prototype._children);
+    child.prototype._dataTypes = _.extend({}, parent.prototype._dataTypes || dataTypes);
+
+    // Mix in all prototype properties to the subclass if supplied.
+    if (protoProps) {
+        args.forEach(function processArg(def) {
+            var omitFromExtend = [
+                'dataTypes', 'props', 'session', 'derived', 'collections', 'children'
+            ];
+            if (def.dataTypes) {
+                _.each(def.dataTypes, function (def, name) {
+                    child.prototype._dataTypes[name] = def;
+                });
+            }
+            if (def.props) {
+                _.each(def.props, function (def, name) {
+                    createPropertyDefinition(child.prototype, name, def);
+                });
+            }
+            if (def.session) {
+                _.each(def.session, function (def, name) {
+                    createPropertyDefinition(child.prototype, name, def, true);
+                });
+            }
+            if (def.derived) {
+                _.each(def.derived, function (def, name) {
+                    createDerivedProperty(child.prototype, name, def);
+                });
+            }
+            if (def.collections) {
+                _.each(def.collections, function (constructor, name) {
+                    child.prototype._collections[name] = constructor;
+                });
+            }
+            if (def.children) {
+                _.each(def.children, function (constructor, name) {
+                    child.prototype._children[name] = constructor;
+                });
+            }
+            _.extend(child.prototype, _.omit(def, omitFromExtend));
+        });
+    }
+
+    var toString = Object.prototype.toString;
+
+    // Set a convenience property in case the parent's prototype is needed
+    // later.
+    child.__super__ = parent.prototype;
+
+    return child;
+}
+
+Base.extend = extend;
+
+// Our main exports
+module.exports = Base;
+
+},{"array-next":66,"backbone-events-standalone":68,"key-tree-store":69,"underscore":78}],66:[function(require,module,exports){
+arguments[4][18][0].apply(exports,arguments)
+},{"dup":18}],67:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+},{"dup":12}],68:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"./backbone-events-standalone":67,"dup":13}],69:[function(require,module,exports){
+arguments[4][21][0].apply(exports,arguments)
+},{"dup":21}],70:[function(require,module,exports){
+
+/**
+ * Expose `parse`.
+ */
+
+module.exports = parse;
+
+/**
+ * Tests for browser support.
+ */
+
+var div = document.createElement('div');
+// Setup
+div.innerHTML = '  <link/><table></table><a href="/a">a</a><input type="checkbox"/>';
+// Make sure that link elements get serialized correctly by innerHTML
+// This requires a wrapper element in IE
+var innerHTMLBug = !div.getElementsByTagName('link').length;
+div = undefined;
+
+/**
+ * Wrap map from jquery.
+ */
+
+var map = {
+  legend: [1, '<fieldset>', '</fieldset>'],
+  tr: [2, '<table><tbody>', '</tbody></table>'],
+  col: [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+  // for script/link/style tags to work in IE6-8, you have to wrap
+  // in a div with a non-whitespace character in front, ha!
+  _default: innerHTMLBug ? [1, 'X<div>', '</div>'] : [0, '', '']
+};
+
+map.td =
+map.th = [3, '<table><tbody><tr>', '</tr></tbody></table>'];
+
+map.option =
+map.optgroup = [1, '<select multiple="multiple">', '</select>'];
+
+map.thead =
+map.tbody =
+map.colgroup =
+map.caption =
+map.tfoot = [1, '<table>', '</table>'];
+
+map.polyline =
+map.ellipse =
+map.polygon =
+map.circle =
+map.text =
+map.line =
+map.path =
+map.rect =
+map.g = [1, '<svg xmlns="http://www.w3.org/2000/svg" version="1.1">','</svg>'];
+
+/**
+ * Parse `html` and return a DOM Node instance, which could be a TextNode,
+ * HTML DOM Node of some kind (<div> for example), or a DocumentFragment
+ * instance, depending on the contents of the `html` string.
+ *
+ * @param {String} html - HTML string to "domify"
+ * @param {Document} doc - The `document` instance to create the Node for
+ * @return {DOMNode} the TextNode, DOM Node, or DocumentFragment instance
+ * @api private
+ */
+
+function parse(html, doc) {
+  if ('string' != typeof html) throw new TypeError('String expected');
+
+  // default to the global `document` object
+  if (!doc) doc = document;
+
+  // tag name
+  var m = /<([\w:]+)/.exec(html);
+  if (!m) return doc.createTextNode(html);
+
+  html = html.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
+
+  var tag = m[1];
+
+  // body support
+  if (tag == 'body') {
+    var el = doc.createElement('html');
+    el.innerHTML = html;
+    return el.removeChild(el.lastChild);
+  }
+
+  // wrap map
+  var wrap = map[tag] || map._default;
+  var depth = wrap[0];
+  var prefix = wrap[1];
+  var suffix = wrap[2];
+  var el = doc.createElement('div');
+  el.innerHTML = prefix + html + suffix;
+  while (depth--) el = el.lastChild;
+
+  // one element
+  if (el.firstChild == el.lastChild) {
+    return el.removeChild(el.firstChild);
+  }
+
+  // several elements
+  var fragment = doc.createDocumentFragment();
+  while (el.firstChild) {
+    fragment.appendChild(el.removeChild(el.firstChild));
+  }
+
+  return fragment;
+}
+
+},{}],71:[function(require,module,exports){
+
+/**
+ * Module dependencies.
+ */
+
+var events = require('component-event');
+var delegate = require('delegate-events');
+var forceCaptureEvents = ['focus', 'blur'];
+
+/**
+ * Expose `Events`.
+ */
+
+module.exports = Events;
+
+/**
+ * Initialize an `Events` with the given
+ * `el` object which events will be bound to,
+ * and the `obj` which will receive method calls.
+ *
+ * @param {Object} el
+ * @param {Object} obj
+ * @api public
+ */
+
+function Events(el, obj) {
+  if (!(this instanceof Events)) return new Events(el, obj);
+  if (!el) throw new Error('element required');
+  if (!obj) throw new Error('object required');
+  this.el = el;
+  this.obj = obj;
+  this._events = {};
+}
+
+/**
+ * Subscription helper.
+ */
+
+Events.prototype.sub = function(event, method, cb){
+  this._events[event] = this._events[event] || {};
+  this._events[event][method] = cb;
+};
+
+/**
+ * Bind to `event` with optional `method` name.
+ * When `method` is undefined it becomes `event`
+ * with the "on" prefix.
+ *
+ * Examples:
+ *
+ *  Direct event handling:
+ *
+ *    events.bind('click') // implies "onclick"
+ *    events.bind('click', 'remove')
+ *    events.bind('click', 'sort', 'asc')
+ *
+ *  Delegated event handling:
+ *
+ *    events.bind('click li > a')
+ *    events.bind('click li > a', 'remove')
+ *    events.bind('click a.sort-ascending', 'sort', 'asc')
+ *    events.bind('click a.sort-descending', 'sort', 'desc')
+ *
+ * @param {String} event
+ * @param {String|function} [method]
+ * @return {Function} callback
+ * @api public
+ */
+
+Events.prototype.bind = function(event, method){
+  var e = parse(event);
+  var el = this.el;
+  var obj = this.obj;
+  var name = e.name;
+  var method = method || 'on' + name;
+  var args = [].slice.call(arguments, 2);
+
+  // callback
+  function cb(){
+    var a = [].slice.call(arguments).concat(args);
+
+    if (typeof method === 'function') {
+        method.apply(obj, a);    
+        return;
+    }
+    
+    if (!obj[method]) {
+        throw new Error(method + ' method is not defined');
+    } else {
+        obj[method].apply(obj, a);
+    }
+  }
+
+  // bind
+  if (e.selector) {
+    cb = delegate.bind(el, e.selector, name, cb);
+  } else {
+    events.bind(el, name, cb);
+  }
+
+  // subscription for unbinding
+  this.sub(name, method, cb);
+
+  return cb;
+};
+
+/**
+ * Unbind a single binding, all bindings for `event`,
+ * or all bindings within the manager.
+ *
+ * Examples:
+ *
+ *  Unbind direct handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * Unbind delegate handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * @param {String|Function} [event]
+ * @param {String|Function} [method]
+ * @api public
+ */
+
+Events.prototype.unbind = function(event, method){
+  if (0 == arguments.length) return this.unbindAll();
+  if (1 == arguments.length) return this.unbindAllOf(event);
+
+  // no bindings for this event
+  var bindings = this._events[event];
+  var capture = (forceCaptureEvents.indexOf(event) !== -1);
+  if (!bindings) return;
+
+  // no bindings for this method
+  var cb = bindings[method];
+  if (!cb) return;
+
+  events.unbind(this.el, event, cb, capture);
+};
+
+/**
+ * Unbind all events.
+ *
+ * @api private
+ */
+
+Events.prototype.unbindAll = function(){
+  for (var event in this._events) {
+    this.unbindAllOf(event);
+  }
+};
+
+/**
+ * Unbind all events for `event`.
+ *
+ * @param {String} event
+ * @api private
+ */
+
+Events.prototype.unbindAllOf = function(event){
+  var bindings = this._events[event];
+  if (!bindings) return;
+
+  for (var method in bindings) {
+    this.unbind(event, method);
+  }
+};
+
+/**
+ * Parse `event`.
+ *
+ * @param {String} event
+ * @return {Object}
+ * @api private
+ */
+
+function parse(event) {
+  var parts = event.split(/ +/);
+  return {
+    name: parts.shift(),
+    selector: parts.join(' ')
+  }
+}
+
+},{"component-event":72,"delegate-events":73}],72:[function(require,module,exports){
+var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
+    unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
+    prefix = bind !== 'addEventListener' ? 'on' : '';
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.bind = function(el, type, fn, capture){
+  el[bind](prefix + type, fn, capture || false);
+  return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  el[unbind](prefix + type, fn, capture || false);
+  return fn;
+};
+},{}],73:[function(require,module,exports){
+/**
+ * Module dependencies.
+ */
+
+var closest = require('closest')
+  , event = require('event');
+
+/**
+ * Delegate event `type` to `selector`
+ * and invoke `fn(e)`. A callback function
+ * is returned which may be passed to `.unbind()`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+// Some events don't bubble, so we want to bind to the capture phase instead
+// when delegating.
+var forceCaptureEvents = ['focus', 'blur'];
+
+exports.bind = function(el, selector, type, fn, capture){
+  if (forceCaptureEvents.indexOf(type) !== -1) capture = true;
+
+  return event.bind(el, type, function(e){
+    var target = e.target || e.srcElement;
+    e.delegateTarget = closest(target, selector, true, el);
+    if (e.delegateTarget) fn.call(el, e);
+  }, capture);
+};
+
+/**
+ * Unbind event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  if (forceCaptureEvents.indexOf(type) !== -1) capture = true;
+
+  event.unbind(el, type, fn, capture);
+};
+
+},{"closest":74,"event":72}],74:[function(require,module,exports){
+var matches = require('matches-selector')
+
+module.exports = function (element, selector, checkYoSelf) {
+  var parent = checkYoSelf ? element : element.parentNode
+
+  while (parent && parent !== document) {
+    if (matches(parent, selector)) return parent;
+    parent = parent.parentNode
+  }
+}
+
+},{"matches-selector":75}],75:[function(require,module,exports){
+
+/**
+ * Element prototype.
+ */
+
+var proto = Element.prototype;
+
+/**
+ * Vendor function.
+ */
+
+var vendor = proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+/**
+ * Expose `match()`.
+ */
+
+module.exports = match;
+
+/**
+ * Match `el` to `selector`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ * @api public
+ */
+
+function match(el, selector) {
+  if (vendor) return vendor.call(el, selector);
+  var nodes = el.parentNode.querySelectorAll(selector);
+  for (var i = 0; i < nodes.length; ++i) {
+    if (nodes[i] == el) return true;
+  }
+  return false;
+}
+},{}],76:[function(require,module,exports){
+module.exports = get;
+
+function get (context, path) {
+  if (path.indexOf('.') == -1 && path.indexOf('[') == -1) {
+    return context[path];
+  }
+
+  var crumbs = path.split(/\.|\[|\]/g);
+  var i = -1;
+  var len = crumbs.length;
+  var result;
+
+  while (++i < len) {
+    if (i == 0) result = context;
+    if (!crumbs[i]) continue;
+    if (result == undefined) break;
+    result = result[crumbs[i]];
+  }
+
+  return result;
+}
+
+},{}],77:[function(require,module,exports){
+'use strict';
+
+var proto = Element.prototype;
+var vendor = proto.matches
+  || proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+module.exports = match;
+
+/**
+ * Match `el` to `selector`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ * @api public
+ */
+
+function match(el, selector) {
+  if (vendor) return vendor.call(el, selector);
+  var nodes = el.parentNode.querySelectorAll(selector);
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodes[i] == el) return true;
+  }
+  return false;
+}
+},{}],78:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"dup":28}],79:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -6888,7 +9485,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":51,"ieee754":52,"is-array":53}],51:[function(require,module,exports){
+},{"base64-js":80,"ieee754":81,"is-array":82}],80:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -7014,7 +9611,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],52:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -7100,9 +9697,487 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],53:[function(require,module,exports){
-arguments[4][9][0].apply(exports,arguments)
-},{"dup":9}],54:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{"dup":15}],83:[function(require,module,exports){
+"use strict";
+/*globals Handlebars: true */
+var base = require("./handlebars/base");
+
+// Each of these augment the Handlebars object. No need to setup here.
+// (This is done to easily share code between commonjs and browse envs)
+var SafeString = require("./handlebars/safe-string")["default"];
+var Exception = require("./handlebars/exception")["default"];
+var Utils = require("./handlebars/utils");
+var runtime = require("./handlebars/runtime");
+
+// For compatibility and usage outside of module systems, make the Handlebars object a namespace
+var create = function() {
+  var hb = new base.HandlebarsEnvironment();
+
+  Utils.extend(hb, base);
+  hb.SafeString = SafeString;
+  hb.Exception = Exception;
+  hb.Utils = Utils;
+
+  hb.VM = runtime;
+  hb.template = function(spec) {
+    return runtime.template(spec, hb);
+  };
+
+  return hb;
+};
+
+var Handlebars = create();
+Handlebars.create = create;
+
+exports["default"] = Handlebars;
+},{"./handlebars/base":84,"./handlebars/exception":85,"./handlebars/runtime":86,"./handlebars/safe-string":87,"./handlebars/utils":88}],84:[function(require,module,exports){
+"use strict";
+var Utils = require("./utils");
+var Exception = require("./exception")["default"];
+
+var VERSION = "1.3.0";
+exports.VERSION = VERSION;var COMPILER_REVISION = 4;
+exports.COMPILER_REVISION = COMPILER_REVISION;
+var REVISION_CHANGES = {
+  1: '<= 1.0.rc.2', // 1.0.rc.2 is actually rev2 but doesn't report it
+  2: '== 1.0.0-rc.3',
+  3: '== 1.0.0-rc.4',
+  4: '>= 1.0.0'
+};
+exports.REVISION_CHANGES = REVISION_CHANGES;
+var isArray = Utils.isArray,
+    isFunction = Utils.isFunction,
+    toString = Utils.toString,
+    objectType = '[object Object]';
+
+function HandlebarsEnvironment(helpers, partials) {
+  this.helpers = helpers || {};
+  this.partials = partials || {};
+
+  registerDefaultHelpers(this);
+}
+
+exports.HandlebarsEnvironment = HandlebarsEnvironment;HandlebarsEnvironment.prototype = {
+  constructor: HandlebarsEnvironment,
+
+  logger: logger,
+  log: log,
+
+  registerHelper: function(name, fn, inverse) {
+    if (toString.call(name) === objectType) {
+      if (inverse || fn) { throw new Exception('Arg not supported with multiple helpers'); }
+      Utils.extend(this.helpers, name);
+    } else {
+      if (inverse) { fn.not = inverse; }
+      this.helpers[name] = fn;
+    }
+  },
+
+  registerPartial: function(name, str) {
+    if (toString.call(name) === objectType) {
+      Utils.extend(this.partials,  name);
+    } else {
+      this.partials[name] = str;
+    }
+  }
+};
+
+function registerDefaultHelpers(instance) {
+  instance.registerHelper('helperMissing', function(arg) {
+    if(arguments.length === 2) {
+      return undefined;
+    } else {
+      throw new Exception("Missing helper: '" + arg + "'");
+    }
+  });
+
+  instance.registerHelper('blockHelperMissing', function(context, options) {
+    var inverse = options.inverse || function() {}, fn = options.fn;
+
+    if (isFunction(context)) { context = context.call(this); }
+
+    if(context === true) {
+      return fn(this);
+    } else if(context === false || context == null) {
+      return inverse(this);
+    } else if (isArray(context)) {
+      if(context.length > 0) {
+        return instance.helpers.each(context, options);
+      } else {
+        return inverse(this);
+      }
+    } else {
+      return fn(context);
+    }
+  });
+
+  instance.registerHelper('each', function(context, options) {
+    var fn = options.fn, inverse = options.inverse;
+    var i = 0, ret = "", data;
+
+    if (isFunction(context)) { context = context.call(this); }
+
+    if (options.data) {
+      data = createFrame(options.data);
+    }
+
+    if(context && typeof context === 'object') {
+      if (isArray(context)) {
+        for(var j = context.length; i<j; i++) {
+          if (data) {
+            data.index = i;
+            data.first = (i === 0);
+            data.last  = (i === (context.length-1));
+          }
+          ret = ret + fn(context[i], { data: data });
+        }
+      } else {
+        for(var key in context) {
+          if(context.hasOwnProperty(key)) {
+            if(data) { 
+              data.key = key; 
+              data.index = i;
+              data.first = (i === 0);
+            }
+            ret = ret + fn(context[key], {data: data});
+            i++;
+          }
+        }
+      }
+    }
+
+    if(i === 0){
+      ret = inverse(this);
+    }
+
+    return ret;
+  });
+
+  instance.registerHelper('if', function(conditional, options) {
+    if (isFunction(conditional)) { conditional = conditional.call(this); }
+
+    // Default behavior is to render the positive path if the value is truthy and not empty.
+    // The `includeZero` option may be set to treat the condtional as purely not empty based on the
+    // behavior of isEmpty. Effectively this determines if 0 is handled by the positive path or negative.
+    if ((!options.hash.includeZero && !conditional) || Utils.isEmpty(conditional)) {
+      return options.inverse(this);
+    } else {
+      return options.fn(this);
+    }
+  });
+
+  instance.registerHelper('unless', function(conditional, options) {
+    return instance.helpers['if'].call(this, conditional, {fn: options.inverse, inverse: options.fn, hash: options.hash});
+  });
+
+  instance.registerHelper('with', function(context, options) {
+    if (isFunction(context)) { context = context.call(this); }
+
+    if (!Utils.isEmpty(context)) return options.fn(context);
+  });
+
+  instance.registerHelper('log', function(context, options) {
+    var level = options.data && options.data.level != null ? parseInt(options.data.level, 10) : 1;
+    instance.log(level, context);
+  });
+}
+
+var logger = {
+  methodMap: { 0: 'debug', 1: 'info', 2: 'warn', 3: 'error' },
+
+  // State enum
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3,
+  level: 3,
+
+  // can be overridden in the host environment
+  log: function(level, obj) {
+    if (logger.level <= level) {
+      var method = logger.methodMap[level];
+      if (typeof console !== 'undefined' && console[method]) {
+        console[method].call(console, obj);
+      }
+    }
+  }
+};
+exports.logger = logger;
+function log(level, obj) { logger.log(level, obj); }
+
+exports.log = log;var createFrame = function(object) {
+  var obj = {};
+  Utils.extend(obj, object);
+  return obj;
+};
+exports.createFrame = createFrame;
+},{"./exception":85,"./utils":88}],85:[function(require,module,exports){
+"use strict";
+
+var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
+
+function Exception(message, node) {
+  var line;
+  if (node && node.firstLine) {
+    line = node.firstLine;
+
+    message += ' - ' + line + ':' + node.firstColumn;
+  }
+
+  var tmp = Error.prototype.constructor.call(this, message);
+
+  // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
+  for (var idx = 0; idx < errorProps.length; idx++) {
+    this[errorProps[idx]] = tmp[errorProps[idx]];
+  }
+
+  if (line) {
+    this.lineNumber = line;
+    this.column = node.firstColumn;
+  }
+}
+
+Exception.prototype = new Error();
+
+exports["default"] = Exception;
+},{}],86:[function(require,module,exports){
+"use strict";
+var Utils = require("./utils");
+var Exception = require("./exception")["default"];
+var COMPILER_REVISION = require("./base").COMPILER_REVISION;
+var REVISION_CHANGES = require("./base").REVISION_CHANGES;
+
+function checkRevision(compilerInfo) {
+  var compilerRevision = compilerInfo && compilerInfo[0] || 1,
+      currentRevision = COMPILER_REVISION;
+
+  if (compilerRevision !== currentRevision) {
+    if (compilerRevision < currentRevision) {
+      var runtimeVersions = REVISION_CHANGES[currentRevision],
+          compilerVersions = REVISION_CHANGES[compilerRevision];
+      throw new Exception("Template was precompiled with an older version of Handlebars than the current runtime. "+
+            "Please update your precompiler to a newer version ("+runtimeVersions+") or downgrade your runtime to an older version ("+compilerVersions+").");
+    } else {
+      // Use the embedded version info since the runtime doesn't know about this revision yet
+      throw new Exception("Template was precompiled with a newer version of Handlebars than the current runtime. "+
+            "Please update your runtime to a newer version ("+compilerInfo[1]+").");
+    }
+  }
+}
+
+exports.checkRevision = checkRevision;// TODO: Remove this line and break up compilePartial
+
+function template(templateSpec, env) {
+  if (!env) {
+    throw new Exception("No environment passed to template");
+  }
+
+  // Note: Using env.VM references rather than local var references throughout this section to allow
+  // for external users to override these as psuedo-supported APIs.
+  var invokePartialWrapper = function(partial, name, context, helpers, partials, data) {
+    var result = env.VM.invokePartial.apply(this, arguments);
+    if (result != null) { return result; }
+
+    if (env.compile) {
+      var options = { helpers: helpers, partials: partials, data: data };
+      partials[name] = env.compile(partial, { data: data !== undefined }, env);
+      return partials[name](context, options);
+    } else {
+      throw new Exception("The partial " + name + " could not be compiled when running in runtime-only mode");
+    }
+  };
+
+  // Just add water
+  var container = {
+    escapeExpression: Utils.escapeExpression,
+    invokePartial: invokePartialWrapper,
+    programs: [],
+    program: function(i, fn, data) {
+      var programWrapper = this.programs[i];
+      if(data) {
+        programWrapper = program(i, fn, data);
+      } else if (!programWrapper) {
+        programWrapper = this.programs[i] = program(i, fn);
+      }
+      return programWrapper;
+    },
+    merge: function(param, common) {
+      var ret = param || common;
+
+      if (param && common && (param !== common)) {
+        ret = {};
+        Utils.extend(ret, common);
+        Utils.extend(ret, param);
+      }
+      return ret;
+    },
+    programWithDepth: env.VM.programWithDepth,
+    noop: env.VM.noop,
+    compilerInfo: null
+  };
+
+  return function(context, options) {
+    options = options || {};
+    var namespace = options.partial ? options : env,
+        helpers,
+        partials;
+
+    if (!options.partial) {
+      helpers = options.helpers;
+      partials = options.partials;
+    }
+    var result = templateSpec.call(
+          container,
+          namespace, context,
+          helpers,
+          partials,
+          options.data);
+
+    if (!options.partial) {
+      env.VM.checkRevision(container.compilerInfo);
+    }
+
+    return result;
+  };
+}
+
+exports.template = template;function programWithDepth(i, fn, data /*, $depth */) {
+  var args = Array.prototype.slice.call(arguments, 3);
+
+  var prog = function(context, options) {
+    options = options || {};
+
+    return fn.apply(this, [context, options.data || data].concat(args));
+  };
+  prog.program = i;
+  prog.depth = args.length;
+  return prog;
+}
+
+exports.programWithDepth = programWithDepth;function program(i, fn, data) {
+  var prog = function(context, options) {
+    options = options || {};
+
+    return fn(context, options.data || data);
+  };
+  prog.program = i;
+  prog.depth = 0;
+  return prog;
+}
+
+exports.program = program;function invokePartial(partial, name, context, helpers, partials, data) {
+  var options = { partial: true, helpers: helpers, partials: partials, data: data };
+
+  if(partial === undefined) {
+    throw new Exception("The partial " + name + " could not be found");
+  } else if(partial instanceof Function) {
+    return partial(context, options);
+  }
+}
+
+exports.invokePartial = invokePartial;function noop() { return ""; }
+
+exports.noop = noop;
+},{"./base":84,"./exception":85,"./utils":88}],87:[function(require,module,exports){
+"use strict";
+// Build out our basic SafeString type
+function SafeString(string) {
+  this.string = string;
+}
+
+SafeString.prototype.toString = function() {
+  return "" + this.string;
+};
+
+exports["default"] = SafeString;
+},{}],88:[function(require,module,exports){
+"use strict";
+/*jshint -W004 */
+var SafeString = require("./safe-string")["default"];
+
+var escape = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "`": "&#x60;"
+};
+
+var badChars = /[&<>"'`]/g;
+var possible = /[&<>"'`]/;
+
+function escapeChar(chr) {
+  return escape[chr] || "&amp;";
+}
+
+function extend(obj, value) {
+  for(var key in value) {
+    if(Object.prototype.hasOwnProperty.call(value, key)) {
+      obj[key] = value[key];
+    }
+  }
+}
+
+exports.extend = extend;var toString = Object.prototype.toString;
+exports.toString = toString;
+// Sourced from lodash
+// https://github.com/bestiejs/lodash/blob/master/LICENSE.txt
+var isFunction = function(value) {
+  return typeof value === 'function';
+};
+// fallback for older versions of Chrome and Safari
+if (isFunction(/x/)) {
+  isFunction = function(value) {
+    return typeof value === 'function' && toString.call(value) === '[object Function]';
+  };
+}
+var isFunction;
+exports.isFunction = isFunction;
+var isArray = Array.isArray || function(value) {
+  return (value && typeof value === 'object') ? toString.call(value) === '[object Array]' : false;
+};
+exports.isArray = isArray;
+
+function escapeExpression(string) {
+  // don't escape SafeStrings, since they're already safe
+  if (string instanceof SafeString) {
+    return string.toString();
+  } else if (!string && string !== 0) {
+    return "";
+  }
+
+  // Force a string conversion as this will be done by the append regardless and
+  // the regex test will do this transparently behind the scenes, causing issues if
+  // an object's to string has escaped characters in it.
+  string = "" + string;
+
+  if(!possible.test(string)) { return string; }
+  return string.replace(badChars, escapeChar);
+}
+
+exports.escapeExpression = escapeExpression;function isEmpty(value) {
+  if (!value && value !== 0) {
+    return true;
+  } else if (isArray(value) && value.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+exports.isEmpty = isEmpty;
+},{"./safe-string":87}],89:[function(require,module,exports){
+// Create a simple path alias to allow browserify to resolve
+// the runtime on a supported path.
+module.exports = require('./dist/cjs/handlebars.runtime');
+
+},{"./dist/cjs/handlebars.runtime":83}],90:[function(require,module,exports){
+module.exports = require("handlebars/runtime")["default"];
+
+},{"handlebars/runtime":89}],91:[function(require,module,exports){
 (function (global){
 /**
  * @license
