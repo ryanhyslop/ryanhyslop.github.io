@@ -62,7 +62,7 @@ var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+
 
 
   return "<li>\n    <a data-hook=\"link\">\n      <span data-hook=\"title\"></span>\n    </a>\n    <p data-hook=\"description\"></p>\n</li>\n";
@@ -147,7 +147,7 @@ var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  
+
 
 
   return "<li>\n  <div class='flag'>\n    <div class='flag__img'>\n      <img data-hook='cover' class='' />\n    </div>\n    <div class='flag__body'>\n      <a href='' data-hook='link'><span data-hook='track'></span></a> - <span data-hook='artist'></span>\n    </div>\n  </div>\n</li>\n";
@@ -3803,8 +3803,8 @@ function createXHR(options, callback) {
     if ("responseType" in options) {
         xhr.responseType = options.responseType
     }
-    
-    if ("beforeSend" in options && 
+
+    if ("beforeSend" in options &&
         typeof options.beforeSend === "function"
     ) {
         options.beforeSend(xhr)
@@ -3947,7 +3947,7 @@ function forEach(list, iterator, context) {
     if (arguments.length < 3) {
         context = this
     }
-    
+
     if (toString.call(list) === '[object Array]')
         forEachArray(list, iterator, context)
     else if (typeof list === 'string')
@@ -7864,10 +7864,10 @@ Events.prototype.bind = function(event, method){
     var a = [].slice.call(arguments).concat(args);
 
     if (typeof method === 'function') {
-        method.apply(obj, a);    
+        method.apply(obj, a);
         return;
     }
-    
+
     if (!obj[method]) {
         throw new Error(method + ' method is not defined');
     } else {
@@ -9836,8 +9836,8 @@ function registerDefaultHelpers(instance) {
       } else {
         for(var key in context) {
           if(context.hasOwnProperty(key)) {
-            if(data) { 
-              data.key = key; 
+            if(data) {
+              data.key = key;
               data.index = i;
               data.first = (i === 0);
             }
