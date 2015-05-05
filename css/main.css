@@ -411,12 +411,21 @@ pre {
 
 h1, .h1 {
   font-size: 34px; }
+  @media screen and (min-width: 37.5em) {
+    h1, .h1 {
+      font-size: 38px; } }
 
-h3, .h2 {
+h2, .h2 {
   font-size: 28px; }
+  @media screen and (min-width: 37.5em) {
+    h2, .h2 {
+      font-size: 32px; } }
 
 h3, .h3 {
   font-size: 26px; }
+  @media screen and (min-width: 37.5em) {
+    h3, .h3 {
+      font-size: 28px; } }
 
 .l-constrain {
   padding: 0 1em;
@@ -486,22 +495,20 @@ h3, .h3 {
     display: block;
     margin: 0 auto; }
   @media screen and (min-width: 37.5em) {
-    .site-header h1 {
+    .site-header .logo {
       float: left;
       margin-right: 20px; } }
 
-.site-header--small h1 {
+.site-header--small .logo {
   margin: 0; }
 .site-header--small img {
   max-width: 60px; }
 
 .site-header__intro {
-  font-size: 24px;
   color: #6E6E6E;
   line-height: 1; }
   @media screen and (min-width: 37.5em) {
     .site-header__intro {
-      font-size: 36px;
       float: left;
       margin-top: 25px;
       text-align: left; } }
@@ -635,7 +642,8 @@ h3, .h3 {
 
 .article__title {
   text-align: center;
-  margin-bottom: 0; }
+  margin-bottom: 0;
+  line-height: 1.2; }
   @media screen and (min-width: 37.5em) {
     .article__title {
       text-align: left; } }
@@ -670,6 +678,9 @@ h3, .h3 {
   @media screen and (min-width: 37.5em) {
     .article--single .article__title {
       font-size: 42px; } }
+
+.article-comments {
+  padding-bottom: 2em; }
 
 .card {
   padding: 2em 1em 1em 1em;

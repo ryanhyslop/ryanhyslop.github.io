@@ -5,9 +5,81 @@
     <description>I Design &amp; Develop Experiences For The Web</description>
     <link>http://ryanhyslop.uk/</link>
     <atom:link href="http://ryanhyslop.uk/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 13 Apr 2015 23:58:25 +0100</pubDate>
-    <lastBuildDate>Mon, 13 Apr 2015 23:58:25 +0100</lastBuildDate>
+    <pubDate>Tue, 05 May 2015 21:35:03 +0100</pubDate>
+    <lastBuildDate>Tue, 05 May 2015 21:35:03 +0100</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Passive Learning</title>
+        <description>&lt;p&gt;With the industry moving at the rate it does, keeping up to date can feel like treading water. Luckily the web is as generous as it is changing, and there is a wealth of resources to keep give you a continuous exposure to the the information you need to keep on top of the changing tides of the web.&lt;/p&gt;
+
+&lt;h2 id=&quot;staying-on-the-curve&quot;&gt;Staying on the curve&lt;/h2&gt;
+
+&lt;p&gt;For me the key to staying afloat in this industry is passive learning. The idea being to try and expose yourself to as many entertaining and casual sources of information during natural ‘dead time’ without the pressure of having to retain the detail. Classic examples being on a commute or long journey, weekend mornings etc. Ideally with exposure to many lines of thought and technologies you’ll have a base of information that you can call on if required to go into deeper detail, providing you with hooks rather than solid understanding.&lt;/p&gt;
+
+&lt;p&gt;Below are list of resources I use to try and increase my exposure to more information in a less intrusive way.&lt;/p&gt;
+
+&lt;h2 id=&quot;podcasts&quot;&gt;Podcasts&lt;/h2&gt;
+&lt;p&gt;The ultimate in passive learning, podcasts are brilliant for either listening to a discussion intently or simply having on in the background and tuning in when something relevant is being mentioned. A few that have proved incredibly valuable for me recently are;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://devchat.tv/js-jabber/&quot;&gt;Javascript jabber&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://ttlpodcast.com/&quot;&gt;TTL Podcast&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://shoptalkshow.com/&quot;&gt;Shop Talk show&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://thewebahead.net/&quot;&gt;The Web Ahead &lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://styleguides.io/podcast/&quot;&gt;Styleguide podcast&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;newsletters&quot;&gt;Newsletters&lt;/h2&gt;
+&lt;p&gt;Little drops of goodness on  a random weekday morning, can be a bit of a double edge sword if you don’t read them regularly but again the idea here is that theres no pressure, have a quick scan and archive you can always search your inbox to recall the bits you need when appropriate.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://html5weekly.com/&quot;&gt;html5 weekly&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://javascriptweekly.com/&quot;&gt;javascript weekly&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.theuxnewsletter.com/&quot;&gt;the ux newsletter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.ng-newsletter.com/&quot;&gt;ng-newsletter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.goodui.org/&quot;&gt;Good UI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;print&quot;&gt;Print&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://www.creativebloq.com/net-magazine&quot;&gt;.net&lt;/a&gt; having recently transformed itself, it has brought itself back from the brink of me cancelling my subscription. Focusing more on advanced topics and opinions means it’s creating more unique content and is a refreshing non screen way of absorbing web news, a nice one to just have on the coffee table to dip into when lying around.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://abookapart.com/&quot;&gt;A Book Apart&lt;/a&gt; Basically anything by these guys, short, to the point, and easy to dip in and out of or finish in a few hours.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;meetups&quot;&gt;Meetups&lt;/h2&gt;
+
+&lt;p&gt;I’m incredibly lucky to work in a part of the world that is awash with some of the most talented and enthusiastic individuals in our field. In that comes the opportunity to attend a lot of events, mostly free or inexpensive, where can hear some leading thoughts and socialise and learn with others. Its an area that I should probably make more of an effort but the two events below are certainly worth a mention, if you get a chance, go.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://londonwebstandards.org/&quot;&gt;London Web Standards&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.frontendlondon.co.uk/&quot;&gt;Frontend London&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;others&quot;&gt;Others&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://tweetdeck.twitter.com/&quot;&gt;Tweet deck&lt;/a&gt; - Helps to organise the barf that can be a twitter timeline, creating columns for popular people and topics give you a nice place to scan for anything ’trending’.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://getpocket.com/&quot;&gt;Pocket&lt;/a&gt; - Where content goes to die, but only if you let it. Again this is a perfect place to save articles and videos for you to dip into when the time is more appropriate. &lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Naturally people learn differently, and making sure you don’t feel overwhelmed is an increasingly common problem facing developers. I’d certainly be interested in what other resources people use to help them stay on their game.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 04 May 2015 18:02:58 +0100</pubDate>
+        <link>http://ryanhyslop.uk/2015/05/04/passive-learning.html</link>
+        <guid isPermaLink="true">http://ryanhyslop.uk/2015/05/04/passive-learning.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>2013 - A retrospective</title>
