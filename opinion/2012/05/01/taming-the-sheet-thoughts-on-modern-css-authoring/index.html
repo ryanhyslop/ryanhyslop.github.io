@@ -37,7 +37,7 @@
 
 
 
-<!-- <a class="page-link" href="/about/">About</a> -->
+<!-- <a class="page-link" href="/about/">Well since you're interested &hellip;</a> -->
 
 
 
@@ -72,25 +72,25 @@ Fortunately people are stepping back and thinking about how we can tame these un
 
 <p>In production we’re historically used to developing pages individually, Ok thats the homepage done now lets look at the product page, our approach to building parts of these pages can generally be reflected in our Stylesheets and Markup</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nf">#home-products</span> <span class="nt">li</span> <span class="p">{</span>
-    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
-    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nf">#home-products</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span><span class="m">10px</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nf">#catalog-index</span> <span class="nc">.product-list</span> <span class="nt">li</span><span class="p">{</span>
-    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
-    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
-    <span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span> <span class="m">#ccc</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+    <span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span><span class="m">10px</span><span class="p">;</span>
+    <span class="nl">border</span><span class="p">:</span><span class="m">1px</span> <span class="nb">solid</span> <span class="m">#ccc</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>These ( slightly exaggerated ) examples illustrate that we’ve styled up an area of the page based on either; where it is, or its function. The key issue here is, at a top level, these elements may have styles in common with other components, or these components could move within the site layout.</p>
 
 <p>Addressing these issues doesn’t require learning new techniques, syntax or properties, just a slight change in approach. By stepping back from the design and identifying layout and style patterns that can be abstracted into small classes that can be applied to multiple elements.</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.list-inline</span> <span class="o">&gt;</span> <span class="nt">li</span> <span class="p">{</span>
-    <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
-    <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.list-inline</span> <span class="o">&gt;</span> <span class="nt">li</span> <span class="p">{</span>
+    <span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
+    <span class="nl">margin-left</span><span class="p">:</span><span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Here we now have a more generic class that we can apply to anything that needs to be floated left with a margin, and this leads us on nicely to…</p>
 <h2>2. Form not Function.</h2>
@@ -98,54 +98,54 @@ Fortunately people are stepping back and thinking about how we can tame these un
 
 <p>A Good example is:</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/*</span>
-<span class="c"> .callout</span>
-<span class="c"> - A base class to format areas that need to stand out from other content</span>
-<span class="c">*/</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/*
+ .callout
+ - A base class to format areas that need to stand out from other content
+*/</span>
 <span class="nc">.callout</span> <span class="p">{</span>
-    <span class="k">padding</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
-    <span class="k">margin-bottom</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
-    <span class="k">background</span><span class="o">:</span><span class="nb">black</span><span class="p">;</span>
-    <span class="k">color</span><span class="o">:</span><span class="nb">white</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span><span class="m">1em</span><span class="p">;</span>
+    <span class="nl">margin-bottom</span><span class="p">:</span><span class="m">1em</span><span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span><span class="no">black</span><span class="p">;</span>
+    <span class="nl">color</span><span class="p">:</span><span class="no">white</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.callout-important</span> <span class="p">{</span>
-    <span class="k">font-size</span><span class="o">:</span><span class="m">1</span><span class="o">.</span><span class="m">5</span><span class="n">rem</span><span class="p">;</span>
-    <span class="k">background</span><span class="o">:</span><span class="nb">red</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+    <span class="nl">font-size</span><span class="p">:</span><span class="m">1.5rem</span><span class="p">;</span>
+    <span class="nl">background</span><span class="p">:</span><span class="no">red</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Here we are defining a class that’ll style an area of our site that stands out from the rest of the site, calling out, if you will. What this example further illustrates is the idea of establishing a ‘base’ class, and extending it with variations, we then apply these classes as follows:</p>
 
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout callout-important&quot;</span><span class="nt">&gt;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"callout callout-important"</span><span class="nt">&gt;</span></code></pre></figure>
 
 <p>A personal favourite example of abstracting shared styles to a root class for sub classes to extend is one Harry Robberts ( @csswizardry ) demo’d on jsfiddle for buttons:</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* Buttons */</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="c">/* Buttons */</span>
 <span class="nc">.btn</span><span class="p">{</span>
- <span class="k">font</span><span class="o">:</span><span class="k">inherit</span><span class="p">;</span> <span class="c">/* Normalise fonts across &lt;;a&gt;;s and form buttons. */</span>
- <span class="k">text-decoration</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
- <span class="k">cursor</span><span class="o">:</span><span class="k">pointer</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
- <span class="k">border</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="c">/* Normalise border styles (or lack thereof). */</span>
- <span class="k">line-height</span><span class="o">:</span><span class="m">1</span><span class="p">;</span> <span class="c">/* Remove line-height so we can size with padding. */</span>
- <span class="k">display</span><span class="o">:</span><span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span> <span class="c">/* Normalise display state. */</span>
- <span class="k">margin</span><span class="o">:</span><span class="m">0</span><span class="p">;</span>
+ <span class="nl">font</span><span class="p">:</span><span class="nb">inherit</span><span class="p">;</span> <span class="c">/* Normalise fonts across &lt;;a&gt;;s and form buttons. */</span>
+ <span class="nl">text-decoration</span><span class="p">:</span><span class="nb">none</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
+ <span class="nl">cursor</span><span class="p">:</span><span class="nb">pointer</span><span class="p">;</span> <span class="c">/* Normalise hover behaviour. */</span>
+ <span class="nl">border</span><span class="p">:</span><span class="nb">none</span><span class="p">;</span> <span class="c">/* Normalise border styles (or lack thereof). */</span>
+ <span class="nl">line-height</span><span class="p">:</span><span class="m">1</span><span class="p">;</span> <span class="c">/* Remove line-height so we can size with padding. */</span>
+ <span class="nl">display</span><span class="p">:</span><span class="n">inline-block</span><span class="p">;</span> <span class="c">/* Normalise display state. */</span>
+ <span class="nl">margin</span><span class="p">:</span><span class="m">0</span><span class="p">;</span>
  <span class="c">/* Cosmetics */</span>
- <span class="k">padding</span><span class="o">:</span><span class="m">0.5em</span><span class="p">;</span> <span class="c">/* Set in ems so we can scale buttons up with font-size alone. */</span>
- <span class="k">color</span><span class="o">:</span><span class="m">#fff</span><span class="p">;</span>
- <span class="k">background-color</span><span class="o">:</span><span class="m">#ACE</span><span class="p">;</span>
- <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">4px</span><span class="p">;</span>
- <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
- <span class="o">-</span><span class="n">moz</span><span class="o">-</span><span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
- <span class="n">transition</span><span class="o">:</span><span class="m">0.2s</span><span class="p">;</span>
+ <span class="nl">padding</span><span class="p">:</span><span class="m">0.5em</span><span class="p">;</span> <span class="c">/* Set in ems so we can scale buttons up with font-size alone. */</span>
+ <span class="nl">color</span><span class="p">:</span><span class="m">#fff</span><span class="p">;</span>
+ <span class="nl">background-color</span><span class="p">:</span><span class="m">#ACE</span><span class="p">;</span>
+ <span class="nl">border-radius</span><span class="p">:</span><span class="m">4px</span><span class="p">;</span>
+ <span class="nl">-webkit-transition</span><span class="p">:</span><span class="m">0.2s</span><span class="p">;</span>
+ <span class="nl">-moz-transition</span><span class="p">:</span><span class="m">0.2s</span><span class="p">;</span>
+ <span class="nl">transition</span><span class="p">:</span><span class="m">0.2s</span><span class="p">;</span>
 <span class="p">}</span>
  <span class="nc">.btn</span><span class="nd">:hover</span><span class="p">{</span>
- <span class="k">background-color</span><span class="o">:</span><span class="m">#FAB</span><span class="p">;</span>
+ <span class="nl">background-color</span><span class="p">:</span><span class="m">#FAB</span><span class="p">;</span>
  <span class="p">}</span>
-<span class="nc">.btn-sml</span> <span class="p">{</span> <span class="k">font-size</span><span class="o">:.</span><span class="m">75em</span><span class="p">;</span> <span class="p">}</span>
-<span class="nc">.btn-lrg</span> <span class="p">{</span> <span class="k">font-size</span><span class="o">:</span><span class="m">1.5em</span><span class="p">;</span> <span class="p">}</span></code></pre></div>
+<span class="nc">.btn-sml</span> <span class="p">{</span> <span class="nl">font-size</span><span class="p">:</span><span class="m">.75em</span><span class="p">;</span> <span class="p">}</span>
+<span class="nc">.btn-lrg</span> <span class="p">{</span> <span class="nl">font-size</span><span class="p">:</span><span class="m">1.5em</span><span class="p">;</span> <span class="p">}</span></code></pre></figure>
 
 <p>Here we have 1 class, that when applied to either an anchor, input or button element will render the same style. If we need a bigger button, we create a sub class with any additional styles or overrides, and add both classes to the element.</p>
 
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;&quot;</span> <span class="na">class=</span><span class="s">&quot;btn btn-sml&quot;</span><span class="nt">&gt;</span>Small button<span class="nt">&lt;/a&gt;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">""</span> <span class="na">class=</span><span class="s">"btn btn-sml"</span><span class="nt">&gt;</span>Small button<span class="nt">&lt;/a&gt;</span></code></pre></figure>
 
 <p>Wizardry indeed.</p>
 <h2>Organisation</h2>
@@ -177,28 +177,28 @@ Your modules are “discrete component[s] of the page”, they are developed in 
 <h3>Prefixing of your layout rules &amp; namespacing of modules</h3>
 <p>Admittedly not something I’d given much thought till until I’d read SMACCS but one of those things that I’m taking for granted now. Our layout classes govern the structure of our site and so we can tell thats the case with our class names we prefix them:</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.l-main</span> <span class="p">{</span>
-<span class="k">width</span><span class="o">:</span><span class="m">70%</span><span class="p">;</span>
-<span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.l-main</span> <span class="p">{</span>
+<span class="nl">width</span><span class="p">:</span><span class="m">70%</span><span class="p">;</span>
+<span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.l-sidebar</span> <span class="p">{</span>
-<span class="k">width</span><span class="o">:</span><span class="m">20%</span><span class="p">;</span>
-<span class="k">float</span><span class="o">:</span><span class="k">right</span><span class="p">;</span>
+<span class="nl">width</span><span class="p">:</span><span class="m">20%</span><span class="p">;</span>
+<span class="nl">float</span><span class="p">:</span><span class="nb">right</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.l-masthead</span> <span class="p">{</span>
 <span class="c">/* */</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>Immediately when viewing our markup we can see these classes are providing layout rules to our elements:</p>
 
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;l-main&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout&quot;</span><span class="nt">&gt;&lt;p&gt;</span>Hello<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"l-main"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"callout"</span><span class="nt">&gt;&lt;p&gt;</span>Hello<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
 <span class="nt">&lt;/div&gt;</span>
-<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;l-sidebar&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;callout callout-minor&quot;</span><span class="nt">&gt;&lt;p&gt;</span>by the way..<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
-<span class="nt">&lt;/div&gt;</span></code></pre></div>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"l-sidebar"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"callout callout-minor"</span><span class="nt">&gt;&lt;p&gt;</span>by the way..<span class="nt">&lt;/p&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span></code></pre></figure>
 
 <p>The benefit of prefixing your layout rules (and state as we’ll see) is that modules, which make up the bulk of your site, can remain prefix less as we can assume if it hasn’t got a prefix, its a module. This lets us avoid things like:
 <em>.m-searchresult</em>
@@ -211,44 +211,44 @@ or
 <h3>Namespacing</h3>
 <p>Taking our search result for example:</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.searchresult</span> <span class="p">{</span>
- <span class="k">padding</span><span class="o">:</span><span class="m">1em</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.searchresult</span> <span class="p">{</span>
+ <span class="nl">padding</span><span class="p">:</span><span class="m">1em</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.searchresult-title</span> <span class="p">{</span>
- <span class="k">color</span><span class="o">:</span><span class="nb">blue</span><span class="p">;</span>
- <span class="k">margin-bottom</span><span class="o">:</span><span class="m">2em</span><span class="p">;</span>
+ <span class="nl">color</span><span class="p">:</span><span class="no">blue</span><span class="p">;</span>
+ <span class="nl">margin-bottom</span><span class="p">:</span><span class="m">2em</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="nc">.searchresult-image</span> <span class="p">{</span>
-<span class="k">border</span><span class="o">:</span><span class="m">2px</span> <span class="k">solid</span> <span class="nb">orange</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+<span class="nl">border</span><span class="p">:</span><span class="m">2px</span> <span class="nb">solid</span> <span class="no">orange</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Prefixing our modules components with its name is fairly self explanatory in its benefits, it keeps the code organised and we know exactly what it is applied to. Its specific, a bit, too, damn specific!</p>
 
 <p>The huge benefit to these low level selectors is that we can mix and match modules to reuse common design patterns throughout the site. Our search result example, since it has an image, would probably have an image and text inline with one another. This is a common pattern identified in Nicole Sullivan’s ‘media’ object ( <a href="http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/">more info</a> ), so really we could do something like this:</p>
 
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.media</span> <span class="p">{</span>
- <span class="o">@</span><span class="n">extend</span> <span class="o">.</span><span class="n">clearfix</span> <span class="c">/* SASS inclusion of a clear fix for floated children */</span>
+<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.media</span> <span class="p">{</span>
+ <span class="err">@extend</span> <span class="err">.clearfix</span> <span class="c">/* SASS inclusion of a clear fix for floated children */</span>
 <span class="p">}</span>
 <span class="nc">.media-img</span> <span class="p">{</span>
- <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
- <span class="k">margin-left</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span>
+ <span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
+ <span class="nl">margin-left</span><span class="p">:</span><span class="m">10px</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="nc">.media-content</span> <span class="p">{</span>
- <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span>
-<span class="p">}</span></code></pre></div>
+ <span class="nl">float</span><span class="p">:</span><span class="nb">left</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>And we could markup our search result as follows:</p>
 
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media searchresult&quot;</span><span class="nt">&gt;</span>
- <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media-img searchresult-img&quot;</span><span class="nt">&gt;</span>
- <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;image.jpg&quot;</span> <span class="nt">/&gt;&lt;/div&gt;</span>
- <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;media-content&quot;</span><span class="nt">&gt;</span>
- <span class="nt">&lt;h2</span> <span class="na">class=</span><span class="s">&quot;searchresult-heading&quot;</span><span class="nt">&gt;</span>A result!<span class="nt">&lt;/h2&gt;</span>
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"media searchresult"</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"media-img searchresult-img"</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"image.jpg"</span> <span class="nt">/&gt;&lt;/div&gt;</span>
+ <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"media-content"</span><span class="nt">&gt;</span>
+ <span class="nt">&lt;h2</span> <span class="na">class=</span><span class="s">"searchresult-heading"</span><span class="nt">&gt;</span>A result!<span class="nt">&lt;/h2&gt;</span>
  <span class="nt">&lt;p&gt;</span>This is good, we found something<span class="nt">&lt;/p&gt;</span>
  <span class="nt">&lt;/div&gt;</span>
-<span class="nt">&lt;/div&gt;</span></code></pre></div>
+<span class="nt">&lt;/div&gt;</span></code></pre></figure>
 
 <p>Immediate reactions may be that theres a lot of classes for not a lot of styling, but the <em>massive</em> point here is it can be reused all over the site for similar design elements, we’re coding a pattern first and for most then adding the detail.</p>
 
